@@ -42,8 +42,8 @@ def main():
     X, Y = get_data()
     # Initial variable for models 0, ab, and cd.
     variance_0_0 = np.matrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-    variance_ab_0 = np.matrix([[1, 1, 0, 0], [1, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-    variance_cd_0 = np.matrix([[0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 1, 1]])
+    variance_ab_0 = np.matrix([[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    variance_cd_0 = np.matrix([[0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]])
 
     # Initial mean or w_0
     w_0 = 0
