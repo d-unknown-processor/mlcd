@@ -14,8 +14,8 @@
 \newcommand\course{CS 476/676}
 \newcommand\semester{Fall 2013}     % <-- current semester
 \newcommand\hwnum{1}                  % <-- homework number
-\newcommand\yourname{David Snyder} % <-- your name
-\newcommand\login{Hopkins ID: 38C8F8}       
+\newcommand\yourname{Nely Jimenez, David Snyder} % <-- your name
+\newcommand\login{Hopkins ID: 38C8F8, <NELY ID>}       
 \newcommand\hwdate{Due: October 2nd 2013}           % <-- HW due date
 
 \newenvironment{answer}[1]{
@@ -32,85 +32,49 @@
 
 \begin{document}
 
-\noindent \emph{Homework Notes:} I collaborated with Nely Jimenez on this assignment. \\
+\noindent \emph{Homework Notes:} Each section of the assignment represents roughly equal contribution by both David Snyder and Nely Jimenez. \\
 \begin{answer}{1a}
 
-At each millisecond we compute the current posterior given the likelihood of that data point and the prior. This posterior becomes the prior for the next timestep. We rely on equations (7.55-7.60) of Murphy.\\ \\
-After observing $n$ data points, the probability of ${\mathbf{w}}$ at time $n+1$ is, 
+Let $X_{n}$ and $Y_{n}$ represent the first $n$ observations of both the stock values A, B, C and D, 
+and the resultant change in the value of the stock Y. The prior at time $n+1$ is given by 
+
+$p(\mathbf{w} \mid \mathbf{X}, \mathbf{Y}, {\sigma}^{2})$
+
+which is proportional to 
+
+\[
+N(\mathbf{w} \mid \mathbf{w}_{0}, \mathbf{ {\Sigma}_{0}} ) N( \mathbf{Y} \mid \mathbf{{Xw}}, {\sigma}^{2} \mathbf{I}_{n}) = N(\mathbf{w} \mid \mathbf{w}_{n}, \mathbf{\Sigma}_{n})
+\]
+
+As described by Murphy, equations (7.55-7.58).\\ \\
+
+After observing $n$ data points, the probability of ${\mathbf{w}}$ at time $n+1$ is given by, 
 \begin{eqnarray*}
   p(\mathbf{w}) = \mathcal{N}(\mathbf{w} \mid {\mathbf{w}}_{n}, {\mathbf{\Sigma}}_{n}).
 \end{eqnarray*}
 Where 
 \begin{eqnarray*}
-  {\mathbf{w}}_{n} = {\mathbf{\Sigma}}_{n}  {{\mathbf{\Sigma}}_{0}}^{-1}  {\mathbf{w}}_{0} + \frac{1}{{\sigma}^{2}}  {\mathbf{\Sigma}}_{n} {{\mathbf{X}}_{N}}^{T} \mathbf{y} \\
+  {\mathbf{w}}_{n} = {\mathbf{\Sigma}}_{n}  {{\mathbf{\Sigma}}_{0}}^{-1}  {\mathbf{\mu}}_{0} + \frac{1}{{\sigma}^{2}}  {\mathbf{\Sigma}}_{n} {{\mathbf{X}}_{N}}^{T} \mathbf{y} \\
   {\mathbf{\Sigma}}_{n} = {\sigma}^{2} ({\sigma}^{2} {{\mathbf{\Sigma}}_{0}}^{-1} + {\mathbf{X}}^{T} \mathbf{X} )^{-1}
 \end{eqnarray*}
 
-TODO: How to factor in mew sub zero?
+\end{answer}
 
+\begin{answer}{1b}
 
-You can write aligned equations as follows:
-\begin{eqnarray*}
-a &\sim& p(a)\\
-b &\sim& p(b).
-\end{eqnarray*}
-
-You can write inline equations: $a \sim p(b)$, or one line equations:
+Given $\textbf{X}_{n}$, $\textbf{x}_{{n+1}}$ and $\textbf{y}_{n}$ and the prior in 1a, the full posterior predictive distribution
+is given by the following equation (see Murphy equation 7.60),
 \[
-a \sim p(a).
+p(y_{{n+1}} \mid \textbf{x}_{{n+1}}, D, {\sigma} ^ {2}) = \int N(y_{{n+1}} \mid \textbf{x}_{{n+1}} ^ {T} \textbf{w}, {\sigma} ^ {2}) N(\textbf{w} \mid \textbf{w}_{n}, {\Sigma}_{n}) d \textbf{w} )
 \]
+The previous expression is equivalent to 
 
-You can also add bullet points:
-
-\begin{enumerate}[(a)]
-\item
-This is the first bullet point. It can be the solution to the first part of the question
-\item
-This is the solution to the second part of the question.
-\end{enumerate}
-
-You can also add figures (Figure~\ref{fig:example}).
-
-\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
-   \centering
-  % \includegraphics[width=2in]{name.pdf} % uncomment this line and put the figure in the same folder as this document.
-   \caption{example caption}
-   \label{fig:example}
-\end{figure}
-
-And tables (Table~\ref{tab:booktabs})
-
-% Requires the booktabs if the memoir class is not being used
-\begin{table}[htbp]
-   \centering
-   \caption{Table captions are better up top} 
-   \begin{tabular}{|c|c|c|}\hline % Column formatting
-         Animal    & Description & Price (\$)\\\hline
-      Gnat      & per gram & 13.65 \\
-                & each     &  0.01 \\
-      Gnu       & stuffed  & 92.50 \\
-      Emu       & stuffed  & 33.33 \\
-      Armadillo & frozen   &  8.99 \\ \hline
-   \end{tabular}
-   \label{tab:booktabs}
-\end{table}
+\[
+N(y_{{n+1}} \mid \textbf{w}_{n} ^ {T} \textbf{x}, {\sigma} ^ {2} (\textbf{x}_{{n+1}})),
+\]
+where ${ \sigma } ^ {2} (\textbf{x}) = {\sigma} ^ {2} + {\textbf{x}} ^ {T} {\textbf{\Sigma}}_{n} \textbf{x}$
+as given in equation 7.61 Murphy.
 
 \end{answer}
-
-\begin{answer}{2} 
-
-\end{answer}
-
-\begin{answer}{3}
-\end{answer}
-
-\begin{answer}{4}
-
-\end{answer}
-
-
-\begin{answer}{5}
-\end{answer}
-
 
 \end{document}
