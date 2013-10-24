@@ -1,0 +1,9 @@
+digraph g {
+IsFluSeason -> MaryGetsFlu;
+IsFluSeason -> JohnGetsFlu;
+PreviousFluRate -> MaryGetsFlu;
+PreviousFluRate -> JohnGetsFlu;
+JohnVaccinated -> JohnGetsFlu;
+MaryVaccinated -> MaryGetsFlu;
+MaryGetsFlu -> JohnGetsFlu;
+} 
