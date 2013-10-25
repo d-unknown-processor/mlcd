@@ -82,6 +82,7 @@ $G'$.
 
 \begin{answer}{2.2.1.1}
 
+\textbf{Proof} \\
 Suppose that there is no active trail from $\hat{Z}$ to $X$ and there exists some $B_1$ and $B_2$ 
 such that $P_{B_{1}}(X \mid Y) \ne P_{B_{2}}(X \mid Y)$.
 Since there is no active trail between $\hat{Z}$ and $X$, by properties of d-separation,
@@ -96,11 +97,11 @@ $X$ then for all $B_{1}$ and $B_{2}$ $P_{B_{1}}(X \mid Y) = P_{B_{2}}(X \mid Y)$
 
 \begin{answer}{2.2.1.2}
 
-Suppose not. Suppose that Z is a requisite node for P(X|Y) and Pb1(X|Y) = Pb2(X|Y) for all B1 and B2. Let B1 and B2 be some particular B1 and B2
-such that G consists of the following topology Zhat -> Z -> X <- Y so that there is an active trail from Zhat to X given Y as required by the fact that Z is a requisite node for P(X|Y). 
+Suppose not. Suppose that $Z$ is a requisite node for $P(X\midY)$ and $P_{B_{1}}(X \mid Y) = P_{B_{2}}(X \mid Y)$ for all $B_{1}$ and $B_{2}$. Let $B_{1}$ and $B_{2}$ be some particular $B_{1}$ and $B_{2}$
+such that $G$ consists of the following topology $\hat{Z} \leftarrow Z \leftarrow X \rightarrow Y$ so that there is an active trail from $\hat{Z}$ to $X$ given $Y$ as required by the fact that $Z$ is a requisite node for $P(X \mid Y)$. 
 Let all CPDs be nonzero
-for all values of the random variables. Further, let Zhat B1 SOME RELATIONSHIP  with Zhat B2 STUFF HAPPENS so we see that pb1(X|Y) not equal pb2(X|Y). This contradiction allows us to negate our premise. We can then conclude that if Z is a requisite node for P(X|Y) then pb1(X|Y) = pb1(X|Y) for all
-B1 and B2. 
+for all values of the random variables. It is evident that there are CPDs for these networks such that $P_{B_{1}}(X \mid Y) \ne P_{B_{2}}(X \mid Y)$. This contradiction allows us to negate our premise. We can then conclude that if $Z$ is a requisite node for $P(X \mid Y)$ then $P_{B_{1}}(X \mid Y) = P_{B_{1}}(X \mid Y)$ for all
+$B_{1}$ and $B_{2}$. 
 \end{answer}
 
 \begin{answer}{2.2.3.1.a}
@@ -191,20 +192,50 @@ large numbers of features. Also, in this model the features are allowed to be de
 As discussed above, it seems that MEMM and CRFs are better at handling correlated symptom variables (and CRFs are superior to MEMMs at correlated symptoms over time).
 \end{answer}
 
-\begin{answer}{2.4.3.b}
-Suppose not, suppose that $P(x^{1} \mid z^{1}) \le P(x^{1} \mid y^{1}, z^{1})$. 
-\begin{answer}{2.4.3.b}
+\begin{answer}{2.5.1.a}
+\textbf{Proof}\\
+Suppose not, suppose that $P(x^{1} \mid z^{1}) \textless P(x^{1} \mid y^{1}, z^{1})$. Then,
+\begin{eqnarray*}
+ $P(x^{1} \mid z^{1}) \textless P(x^{1} \mid y^{1}, z^{1})$ \\
+ $P(x^{1}, z^{1})/P(Z^{1}) \textless P(x^{1}, y^{1}, z^{1}) / {P(y^{1}, z^{1})$ \\
+ $P(x^{1}, z^{1}) * P(y^{1}, z^{1})  \textless P(x^{1}, y^{1}, z^{1}) * P(z^{1})$ \\
+ $(P(x^{1}, y^{0}, z^{1}) + P(x^{1}, y^{1}, z^{1})) * (P(x^{0}, y^{1}, z^{1}) + p(x^{1}, y^{1}, z^{1})  \textless \\
+(P(x^{1}, y^{1}, z^{1})) * (P(x^{0}, y^{0}, z^{1}) + P(x^{1}, y^{0}, z^{1}) + P(x^{0}, y^{0}, z^{1}) + P(x^{1}, y^{1}, z^{1}))$ \\
+\\
+P(x^{1}, y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) + P(x^{1}, y^{1}, z^{1}) P(x^{0}, y^{1}, z^{1}) \\
++ P(x^{1}, y^{1}, z^{1}) P(x^{1}, y^{1}, z^{1}) + (P(x^{1}, y^{0}, z^{1})P(x^{1}, y^{1}, z^{1}))$ \\
+\textless \\ 
+P(x^{1}, y^{1}, z^{1}) P(x^{0}, y^{1}, z^{1}) + P(x^{1}, y^{1}, z^{1}) P(x^{1}, y^{0}, z^{1}) \\
++ P(x^{1}, y^{1}, z^{1}) P(x^{1}, y^{1}, z^{1}) + (P(x^{0}, y^{0}, z^{1})P(x^{1}, y^{1}, z^{1}))$ \\
+P(x^{1},y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textless 
+P(x^{0}, y^{0}, z^{1}) P(x^{1}, y^{1}, z^{1}))$
+\\
+\\
+P(x^{1},y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textless  0$ \\
+\end{eqnarray*}
+The last step being due to the fact that the CPD specifies that whenever $X$ and $Y$ are both 0, then $Z$ takes on the value of 1 with
+probability 0 and so $P(x^{0}, y^{0}, z^{1}) = 0$.
+\\
+Thus our original assumption is false, and it must be the case that
+$P(x^{1} \mid z^{1}) \ge P(x^{1} \mid y^{1}, z^{1})$.
+
+\begin{answer}{2.5.1.b}
 
 \item
 \begin{tabular}{c|c c c c}
+After trying several noisy-logical functions, the noisy-NAND (see table below) satisfies the required relationships.\\
 $Z$ & $x^0,y^0$ & $x^0,y^1$ & $x^1,y^0$ & $x^1,y^1$ \\ \hline
-$z^0$ & .1 & .8 & .8 & .1 \\
-$z^1$ & .9 & .2 & .2 & .9
+$z^0$ & .8 & .8 & .8 & .1 \\
+$z^1$ & .2 & .2 & .2 & .8
 \end{tabular} \\
 
 
-\begin{answer}{2.4.3.c}
-$Z$ is in dependent of $Y$ in the context of $X = x^{1}$. $Z$ is also independent of $X$ in the context of $Y = y^{1}$.
+\begin{answer}{2.5.1.c}
+$Z$ is independent of $Y$ in the context of $X = x^{0}$ and $Y = y^{0}$. This is evident by the fact that when $X$ and $Y$ take on those values,
+the value of $Z$ is deterministic. 
+\end{answer}
+
+\begin{answer}{2.5.2.a}
 \end{answer}
 
 \end{document}
