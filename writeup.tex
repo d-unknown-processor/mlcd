@@ -51,7 +51,7 @@
 The procedure used to produce the drawing above is as follows.
 List all of the independencies in $\mathcal{F}$. Remove any independence which
 includes FluRate. Now, the remaining independencies guide our creation of
-$G'$. 
+$G'$:
 
 \begin{algorithm}[H]
  %\SetAlgoLined
@@ -97,6 +97,7 @@ $X$ then for all $B_{1}$ and $B_{2}$ $P_{B_{1}}(X \mid Y) = P_{B_{2}}(X \mid Y)$
 
 \begin{answer}{2.2.1.2}
 
+\textbf{Proof} \\
 Suppose not. Suppose that $Z$ is a requisite node for $P(X\midY)$ and $P_{B_{1}}(X \mid Y) = P_{B_{2}}(X \mid Y)$ for all $B_{1}$ and $B_{2}$. Let $B_{1}$ and $B_{2}$ be some particular $B_{1}$ and $B_{2}$
 such that $G$ consists of the following topology $\hat{Z} \leftarrow Z \leftarrow X \rightarrow Y$ so that there is an active trail from $\hat{Z}$ to $X$ given $Y$ as required by the fact that $Z$ is a requisite node for $P(X \mid Y)$. 
 Let all CPDs be nonzero
@@ -106,6 +107,7 @@ $B_{1}$ and $B_{2}$.
 
 \begin{answer}{2.2.3.1.a}
 
+\textbf{Proof} \\
 Let $MB_{G}(X)$ denote the Markov blanet of a node $X$ in an undirected graph $G$, whose set of nodes is denoted $\mathcal{X}$. We will show that
 for any $X$ such that $W = \mathcal{X} - \{X\} - MB_{G}(X)$ then $X$ and $W$ are separated given $MB_{G}(X)$. 
 \\
@@ -115,6 +117,7 @@ Contradiction, the negation of our premise must be true, that is, $X$ and $W$ ar
 
 
 \begin{answer}{2.2.3.1.b}
+\textbf{Proof} \\
 Let $MB_{G}(X)$ denote the Markov blanet of a node $X$ in an undirected graph $G$, whose set of nodes is denoted $\mathcal{X}$. We will show that
 for any $X$ such that $W = \mathcal{X} - \{X\} - MB_{G}(X)$ then $X$ and $W$ are separated given $MB_{G}(X)$ and $MB_{G}(X)$ is the minimal set
 with this property.
@@ -127,7 +130,7 @@ since $N$ is a neighbor of $X$. Because such a path exists, $\neq sep(X;M \mid M
 \begin{answer}{2.2.3.2}
 
 Let $B$ be a Bayesian network with a graph $G$.
-By Definition 4.16 Corollary 4.2, we can create an undirected moral graph from $G$ denoted $M[G]$, such that it is an I-map for $P_{B}$. Therefore,
+By Definition 4.16 Corollary 4.2 of Koller, we can create an undirected moral graph from $G$ denoted $M[G]$ such that it is an I-map for $P_{B}$. Therefore,
 we can show the Markov blanket separates a node $X \in B$ from the remaining nodes and that this set is minimal by first converting $B$ into $M[G]$ and repeating the proofs 2.2.3.1.a and 2.2.3.1.b on the resultant Markov network. 
 
 \end{answer}
@@ -154,7 +157,7 @@ $Y_{1}$ over the undirected edges and so $P(Y_{1} = severe | S_{3,1} = yes) \le 
 \begin{description}
 \item[HMM] No. This is a causal trail from $Y_{2}$ to
 $S_{3,1}$ which is made d-separated by observing $Y_{3}$.
-\item [MEMM] Yes. In the v-structure at $S_{3,1} \leftarrow Y_{3} \rightarrow Y_{2}$ influence can flow from
+\item [MEMM] Yes. In the v-structure at $S_{3,1} \rightarrow Y_{3} \leftarrow Y_{2}$ influence can flow from
 $S_{3,1}$ to $Y_{2}$ since $Y_{3}$ is now observed.
 \item[CRF] No. The active trail is broken by observing
 $Y_{3}$.
@@ -196,36 +199,36 @@ As discussed above, it seems that MEMM and CRFs are better at handling correlate
 \textbf{Proof}\\
 Suppose not, suppose that $P(x^{1} \mid z^{1}) \textless P(x^{1} \mid y^{1}, z^{1})$. Then,
 \begin{eqnarray*}
- $P(x^{1} \mid z^{1}) \textless P(x^{1} \mid y^{1}, z^{1})$ \\
- $P(x^{1}, z^{1})/P(Z^{1}) \textless P(x^{1}, y^{1}, z^{1}) / {P(y^{1}, z^{1})$ \\
- $P(x^{1}, z^{1}) * P(y^{1}, z^{1})  \textless P(x^{1}, y^{1}, z^{1}) * P(z^{1})$ \\
- $(P(x^{1}, y^{0}, z^{1}) + P(x^{1}, y^{1}, z^{1})) * (P(x^{0}, y^{1}, z^{1}) + p(x^{1}, y^{1}, z^{1})  \textless \\
+ $P(x^{1} \mid z^{1}) \textless P(x^{1} \mid y^{1}, z^{1})$ \textbf{ (1)} \\
+ $P(x^{1}, z^{1})/P(Z^{1}) \textless P(x^{1}, y^{1}, z^{1}) / {P(y^{1}, z^{1})$ \textbf{ (2)}\\
+ $P(x^{1}, z^{1}) * P(y^{1}, z^{1})  \textless P(x^{1}, y^{1}, z^{1}) * P(z^{1})$ \textbf{ (3)} \\\\
+ $(P(x^{1}, y^{0}, z^{1}) + P(x^{1}, y^{1}, z^{1})) * (P(x^{0}, y^{1}, z^{1}) + p(x^{1}, y^{1}, z^{1})  \textless \textbf{ (4)}\\
 (P(x^{1}, y^{1}, z^{1})) * (P(x^{0}, y^{0}, z^{1}) + P(x^{1}, y^{0}, z^{1}) + P(x^{0}, y^{0}, z^{1}) + P(x^{1}, y^{1}, z^{1}))$ \\
 \\
-P(x^{1}, y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) + P(x^{1}, y^{1}, z^{1}) P(x^{0}, y^{1}, z^{1}) \\
+P(x^{1}, y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) + P(x^{1}, y^{1}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textbf{ (5)}\\
 + P(x^{1}, y^{1}, z^{1}) P(x^{1}, y^{1}, z^{1}) + (P(x^{1}, y^{0}, z^{1})P(x^{1}, y^{1}, z^{1}))$ \\
 \textless \\ 
 P(x^{1}, y^{1}, z^{1}) P(x^{0}, y^{1}, z^{1}) + P(x^{1}, y^{1}, z^{1}) P(x^{1}, y^{0}, z^{1}) \\
 + P(x^{1}, y^{1}, z^{1}) P(x^{1}, y^{1}, z^{1}) + (P(x^{0}, y^{0}, z^{1})P(x^{1}, y^{1}, z^{1}))$ \\
 P(x^{1},y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textless 
-P(x^{0}, y^{0}, z^{1}) P(x^{1}, y^{1}, z^{1}))$
+P(x^{0}, y^{0}, z^{1}) P(x^{1}, y^{1}, z^{1}))$ \textbf{ (6)}
 \\
 \\
-P(x^{1},y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textless  0$ \\
+P(x^{1},y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textless  0$ \textbf{ (7)}\\
 \end{eqnarray*}
 The last step being due to the fact that the CPD specifies that whenever $X$ and $Y$ are both 0, then $Z$ takes on the value of 1 with
 probability 0 and so $P(x^{0}, y^{0}, z^{1}) = 0$.
 \\
-Thus our original assumption is false, and it must be the case that
+But it cannot be that $P(x^{1},y^{0}, z^{1}) P(x^{0}, y^{1}, z^{1}) \textless 0$ as both terms must either be 0, or greater than 0. Thus our original assumption is false, and it must be the case that
 $P(x^{1} \mid z^{1}) \ge P(x^{1} \mid y^{1}, z^{1})$.
 
 \begin{answer}{2.5.1.b}
 
+After trying several noisy-logical functions, the noisy-NAND (see table below) satisfies the required relationships.\\
 \item
 \begin{tabular}{c|c c c c}
-After trying several noisy-logical functions, the noisy-NAND (see table below) satisfies the required relationships.\\
 $Z$ & $x^0,y^0$ & $x^0,y^1$ & $x^1,y^0$ & $x^1,y^1$ \\ \hline
-$z^0$ & .8 & .8 & .8 & .1 \\
+$z^0$ & .8 & .8 & .8 & .2 \\
 $z^1$ & .2 & .2 & .2 & .8
 \end{tabular} \\
 
@@ -236,6 +239,16 @@ the value of $Z$ is deterministic.
 \end{answer}
 
 \begin{answer}{2.5.2.a}
+
+Perhaps a solution to this problem begins by marginalizing out the variables $l + 1$ to $k$.
+
+\end{answer}
+
+\begin{answer}{2.5.2.b}
+
+It seems that the result would be inexact. If we have some v-structure such as $D_{1} \rightarrow F \leftarrow D_{2}$ and we remove $D_{2}$ then
+we should have a dependency between $D_{1}$ and $D_{2}$ which no longer exists. 
+
 \end{answer}
 
 \end{document}
