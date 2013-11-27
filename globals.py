@@ -2,7 +2,7 @@ __author__ = 'arenduchintala'
 
 import random
 
-NUM_TOPICS = 5  # K
+NUM_TOPICS = 25  # K
 alpha = 0.1
 beta = 0.01
 lamb = 0.5

@@ -112,6 +112,7 @@ class Document():
         for k in range(NUM_TOPICS):
             self.theta[k] = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
 
-        if abs(sum(self.theta.values()) - 1.0) > 1e-15:
+        if abs(sum(self.theta.values()) - 1.0) > 1e-5:
+            print 'difference:', abs(sum(self.theta.values()) - 1.0)
             raise BaseException('sum of document topic thetas is not 1.0')
 
