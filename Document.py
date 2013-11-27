@@ -24,12 +24,16 @@ class Document():
         """
         self.nd[current_zdi] -= 1
         self.nd['*'] -= 1
+        if not DIAGNOSTICS:
+            return True
         if self.nd[current_zdi] < 0 or self.nd['*'] < 0:
             print current_zdi, self.nd[current_zdi], self.nd['*']
             raise ValueError('nd_k or nd_star can not be less than 0')
 
 
     def check_document_topic_counts(self):
+        if not DIAGNOSTICS:
+            return True
         sum_ks = 0.0
         for k in range(NUM_TOPICS):
             sum_ks = sum_ks + self.nd[k]
@@ -43,6 +47,8 @@ class Document():
         """
         self.nd[new_zdi] += 1
         self.nd['*'] += 1
+        if not DIAGNOSTICS:
+            return True
         if self.nd[new_zdi] > len(self.tokens) or self.nd['*'] > len(self.tokens):
             print new_zdi, self.nd[new_zdi], self.nd['*'], len(self.tokens)
             raise ValueError('nd_k or nd_star can not be greater than lenght of document')
@@ -95,7 +101,7 @@ class Document():
         """
         nkw = nk.get(('global', zdi, token), 0.0)
         nk_star = nk.get(('global', zdi, '*'), 0.0)
-        phi_zdi_w = ( nkw + beta) / ( + len(VOCAB) * beta)
+        phi_zdi_w = ( nkw + beta) / ( nk_star + len(VOCAB) * beta)
 
         nckw = nk.get((corpus, zdi, token), 0.0)
         nck_star = nk[(corpus, zdi, '*')]
@@ -113,6 +119,8 @@ class Document():
         for k in range(NUM_TOPICS):
             self.theta[k] = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
 
+        if not DIAGNOSTICS:
+            return True
         if abs(sum(self.theta.values()) - 1.0) > 1e-5:
             print 'difference:', abs(sum(self.theta.values()) - 1.0)
             raise BaseException('sum of document topic thetas is not 1.0')
@@ -123,16 +131,14 @@ class Document():
         for k in range(NUM_TOPICS):
             theta_dk = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
             if corpus is None:
-                phi = current_phi.get(('global', k, token), 0.0)  # TODO: what if i cant find this key in current phi?
+                phi = current_phi[('global', k, token)]
             else:
-                phi = current_phi.get((corpus, k, token), 0.0)  # TODO: what if i cant find this key in current phi?
+                phi = current_phi[(corpus, k, token)]
             sampling_weights[k] = theta_dk * phi
 
         sum_weight = float(sum(sampling_weights))
         if sum_weight == 0:
-            #print 'Sum of weights for token:', token, ' is 0.0, this must be an unseen word'
-            sampling_weights = [1.0 for _ in range(NUM_TOPICS)] # give equal weight to all topics
-            sum_weight = len(sampling_weights)
+            raise BaseException(str('Sum of weights for token: ' + token + ' is 0.0, this must be an unseen word'))
         elif sum_weight < 0:
             raise BaseException('Sum of weights is negative, this is a problem!')
         else:
@@ -144,15 +150,13 @@ class Document():
 
 
     def get_new_xdi_as_test_document(self, zdi, token, corpus, current_phi):
-        phi_zdi_w = current_phi.get(('global', zdi, token), 0.0)
-        phi_c_zdi_w = current_phi.get((corpus, zdi, token), 0.0)
+        phi_zdi_w = current_phi[('global', zdi, token)]
+        phi_c_zdi_w = current_phi[(corpus, zdi, token)]
 
         sample_weights = [(1 - lamb) * phi_zdi_w, lamb * phi_c_zdi_w]
         sum_weight = float(sum(sample_weights))
         if sum_weight == 0:
-            #print 'Sum of weights for token:', token, ' is 0.0, this must be an unseen word'
-            sample_weights = [(1 - lamb), lamb]  # give binomial weight to all possible xdi
-            sum_weight = float(sum(sample_weights))
+            raise BaseException(str('Sum of weights for token: ' + token + ' is 0.0, this must be an unseen word'))
         elif sum_weight < 0:
             raise BaseException('Sum of weights is negative, this is a problem!')
         else:

@@ -2,12 +2,14 @@ __author__ = 'arenduchintala'
 
 import random
 
-NUM_TOPICS = 25  # K
+NUM_TOPICS = 5  # K
 alpha = 0.1
 beta = 0.01
 lamb = 0.5
 nk = {}
 VOCAB = {}
+UNSEEN_VOCAB = {}
+DIAGNOSTICS = False
 
 
 def multinomial_sampling(options, probabilities):

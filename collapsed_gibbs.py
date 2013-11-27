@@ -24,8 +24,16 @@ def initialize_nk():
             nk[(current_corpus, zdi, '*')] = nk.get((current_corpus, zdi, '*'), 0.0) + 1.0
             VOCAB[token] = VOCAB.get(token, 0.0) + 1.0
 
+    for d in testing_documents:
+        for token in d.tokens:
+            if token not in VOCAB:
+                UNSEEN_VOCAB[token] = UNSEEN_VOCAB.get(token, 0.0) + 1.0
+            VOCAB[token] = VOCAB.get(token, 0.0) + 1.0
+
 
 def check():
+    if not DIAGNOSTICS:
+        return True
     print 'checking...'
     sum_global_stars = 0.0
     for k in range(NUM_TOPICS):
@@ -83,9 +91,25 @@ def exclude_topic_token_counts(zdi, token, corpus):
 
 def compute_phi():
     current_phi = {}  # includes both global phi and corpus specific phi
+    """
     for (corp, k, token) in nk:
         if token != '*': # what if i don't have this check?
             current_phi[(corp, k, token)] = (nk[(corp, k, token)] + beta) / (nk[(corp, k, '*')] + len(VOCAB) * beta)
+    """
+    for unseen_token in UNSEEN_VOCAB:
+        for k in range(NUM_TOPICS):
+            for corp in ['global', 'NIPS', 'ACL']:
+                nckw = nk.get((corp, k, unseen_token), 0.0)
+                if nckw != 0:
+                    raise BaseException(str('corp:' + corp + ' topic:' + str(k) + ' token:' + unseen_token + ' is unseen but has counts'))
+                current_phi[(corp, k, unseen_token)] = (nckw + beta) / (nk[(corp, k, '*')] + len(VOCAB) * beta)
+
+    for token in VOCAB:
+        for k in range(NUM_TOPICS):
+            for corp in ['global', 'NIPS', 'ACL']:
+                nckw = nk.get((corp, k, token), 0.0)
+                current_phi[(corp, k, token)] = (nckw + beta) / (nk[(corp, k, '*')] + len(VOCAB) * beta)
+
     return current_phi
 
 
@@ -95,8 +119,8 @@ def log_likelihood(document_set, current_phi):
         for idx, w in enumerate(d.tokens):
             inner = 0.0
             for z in range(NUM_TOPICS):
-                phi_zw = current_phi.get(('global', z, w), 0.0)
-                phi_cd_zw = current_phi.get((d.corpus, z, w), 0.0)
+                phi_zw = current_phi[('global', z, w)]
+                phi_cd_zw = current_phi[(d.corpus, z, w)]
                 inner += d.theta[z] * ((1 - lamb) * phi_zw + lamb * phi_cd_zw)
             if inner > 0.0:
                 sum_log_likelihood += log(inner)
@@ -153,7 +177,6 @@ def iterate_train_set():
         d.compute_theta()
         d.check_document_topic_counts()
     current_phi = compute_phi()
-    #check()
     return current_phi
 
 
@@ -182,10 +205,11 @@ if __name__ == '__main__':
 
     initialize_nk()
     check()
-    for t in range(10):
+    for t in range(100):
         stderr.write('ITERATION ' + str(t) + '\n')
         current_phi = iterate_train_set()
         iterate_test_set(current_phi)
+        check()
         print 'train set log-likelihood', log_likelihood(training_documents, current_phi)
         print 'test  set log-likelihood', log_likelihood(testing_documents, current_phi)
 
