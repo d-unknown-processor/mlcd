@@ -24,12 +24,16 @@ class Document():
         """
         self.nd[current_zdi] -= 1
         self.nd['*'] -= 1
+        if not DIAGNOSTICS:
+            return True
         if self.nd[current_zdi] < 0 or self.nd['*'] < 0:
             print current_zdi, self.nd[current_zdi], self.nd['*']
             raise ValueError('nd_k or nd_star can not be less than 0')
 
 
     def check_document_topic_counts(self):
+        if not DIAGNOSTICS:
+            return True
         sum_ks = 0.0
         for k in range(NUM_TOPICS):
             sum_ks = sum_ks + self.nd[k]
@@ -43,6 +47,8 @@ class Document():
         """
         self.nd[new_zdi] += 1
         self.nd['*'] += 1
+        if not DIAGNOSTICS:
+            return True
         if self.nd[new_zdi] > len(self.tokens) or self.nd['*'] > len(self.tokens):
             print new_zdi, self.nd[new_zdi], self.nd['*'], len(self.tokens)
             raise ValueError('nd_k or nd_star can not be greater than lenght of document')
@@ -113,6 +119,8 @@ class Document():
         for k in range(NUM_TOPICS):
             self.theta[k] = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
 
+        if not DIAGNOSTICS:
+            return True
         if abs(sum(self.theta.values()) - 1.0) > 1e-5:
             print 'difference:', abs(sum(self.theta.values()) - 1.0)
             raise BaseException('sum of document topic thetas is not 1.0')

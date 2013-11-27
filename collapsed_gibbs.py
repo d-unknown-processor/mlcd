@@ -32,6 +32,8 @@ def initialize_nk():
 
 
 def check():
+    if not DIAGNOSTICS:
+        return True
     print 'checking...'
     sum_global_stars = 0.0
     for k in range(NUM_TOPICS):
@@ -175,7 +177,6 @@ def iterate_train_set():
         d.compute_theta()
         d.check_document_topic_counts()
     current_phi = compute_phi()
-    #check()
     return current_phi
 
 
@@ -204,10 +205,11 @@ if __name__ == '__main__':
 
     initialize_nk()
     check()
-    for t in range(10):
+    for t in range(100):
         stderr.write('ITERATION ' + str(t) + '\n')
         current_phi = iterate_train_set()
         iterate_test_set(current_phi)
+        check()
         print 'train set log-likelihood', log_likelihood(training_documents, current_phi)
         print 'test  set log-likelihood', log_likelihood(testing_documents, current_phi)
 
