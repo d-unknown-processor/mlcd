@@ -8,6 +8,7 @@ beta = 0.01
 lamb = 0.5
 nk = {}
 VOCAB = {}
+UNSEEN_VOCAB = {}
 
 
 def multinomial_sampling(options, probabilities):

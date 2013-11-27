@@ -95,7 +95,7 @@ class Document():
         """
         nkw = nk.get(('global', zdi, token), 0.0)
         nk_star = nk.get(('global', zdi, '*'), 0.0)
-        phi_zdi_w = ( nkw + beta) / ( + len(VOCAB) * beta)
+        phi_zdi_w = ( nkw + beta) / ( nk_star + len(VOCAB) * beta)
 
         nckw = nk.get((corpus, zdi, token), 0.0)
         nck_star = nk[(corpus, zdi, '*')]
@@ -123,16 +123,14 @@ class Document():
         for k in range(NUM_TOPICS):
             theta_dk = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
             if corpus is None:
-                phi = current_phi.get(('global', k, token), 0.0)  # TODO: what if i cant find this key in current phi?
+                phi = current_phi[('global', k, token)]
             else:
-                phi = current_phi.get((corpus, k, token), 0.0)  # TODO: what if i cant find this key in current phi?
+                phi = current_phi[(corpus, k, token)]
             sampling_weights[k] = theta_dk * phi
 
         sum_weight = float(sum(sampling_weights))
         if sum_weight == 0:
-            #print 'Sum of weights for token:', token, ' is 0.0, this must be an unseen word'
-            sampling_weights = [1.0 for _ in range(NUM_TOPICS)] # give equal weight to all topics
-            sum_weight = len(sampling_weights)
+            raise BaseException(str('Sum of weights for token: ' + token + ' is 0.0, this must be an unseen word'))
         elif sum_weight < 0:
             raise BaseException('Sum of weights is negative, this is a problem!')
         else:
@@ -144,15 +142,13 @@ class Document():
 
 
     def get_new_xdi_as_test_document(self, zdi, token, corpus, current_phi):
-        phi_zdi_w = current_phi.get(('global', zdi, token), 0.0)
-        phi_c_zdi_w = current_phi.get((corpus, zdi, token), 0.0)
+        phi_zdi_w = current_phi[('global', zdi, token)]
+        phi_c_zdi_w = current_phi[(corpus, zdi, token)]
 
         sample_weights = [(1 - lamb) * phi_zdi_w, lamb * phi_c_zdi_w]
         sum_weight = float(sum(sample_weights))
         if sum_weight == 0:
-            #print 'Sum of weights for token:', token, ' is 0.0, this must be an unseen word'
-            sample_weights = [(1 - lamb), lamb]  # give binomial weight to all possible xdi
-            sum_weight = float(sum(sample_weights))
+            raise BaseException(str('Sum of weights for token: ' + token + ' is 0.0, this must be an unseen word'))
         elif sum_weight < 0:
             raise BaseException('Sum of weights is negative, this is a problem!')
         else:
