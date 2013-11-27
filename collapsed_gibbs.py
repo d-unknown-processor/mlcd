@@ -7,6 +7,7 @@ from Document import Document
 from math import log
 from collections import defaultdict
 from pprint import pprint
+import pdb
 
 training_documents = []
 testing_documents = []
@@ -97,11 +98,33 @@ def log_likelihood(document_set, current_phi):
                 phi_zw = current_phi.get(('global', z, w), 0.0)
                 phi_cd_zw = current_phi.get((d.corpus, z, w), 0.0)
                 inner += d.theta[z] * ((1 - lamb) * phi_zw + lamb * phi_cd_zw)
-            sum_log_likelihood += log(inner)
+            if inner > 0.0:
+                sum_log_likelihood += log(inner)
     return sum_log_likelihood
 
 
-def iterate():
+def iterate_test_set(current_phi):
+    for i, d in enumerate(testing_documents):
+        current_corpus = d.corpus
+        for idx, token in enumerate(d.tokens):
+            zdi = d.z[idx]
+            xdi = d.x[idx]
+            d.exclude_document_topic_counts(zdi)
+            if xdi == 0:
+                new_zdi = d.get_new_zdi_as_test_document(token, current_phi)
+            else:
+                new_zdi = d.get_new_zdi_as_test_document(token, current_phi, current_corpus)
+            new_xdi = d.get_new_xdi_as_test_document(new_zdi, token, current_corpus, current_phi)
+
+            d.z[idx] = new_zdi
+            d.x[idx] = new_xdi
+
+            d.include_document_topic_counts(new_zdi)
+        d.compute_theta()
+        d.check_document_topic_counts()
+
+
+def iterate_train_set():
     for i, d in enumerate(training_documents):
         current_corpus = d.corpus
         for idx, token in enumerate(d.tokens):
@@ -159,11 +182,12 @@ if __name__ == '__main__':
 
     initialize_nk()
     check()
-    for t in range(100):
+    for t in range(10):
         stderr.write('ITERATION ' + str(t) + '\n')
-        current_phi = iterate()
-        #pprint(current_phi)
-        print 'log-likelihood', log_likelihood(training_documents, current_phi)
+        current_phi = iterate_train_set()
+        iterate_test_set(current_phi)
+        print 'train set log-likelihood', log_likelihood(training_documents, current_phi)
+        print 'test  set log-likelihood', log_likelihood(testing_documents, current_phi)
 
 
 

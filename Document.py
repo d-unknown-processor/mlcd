@@ -1,6 +1,7 @@
 __author__ = 'arenduchintala'
 
 from globals import *
+from sys import stderr
 
 
 class Document():
@@ -116,3 +117,47 @@ class Document():
             print 'difference:', abs(sum(self.theta.values()) - 1.0)
             raise BaseException('sum of document topic thetas is not 1.0')
 
+
+    def get_new_zdi_as_test_document(self, token, current_phi, corpus=None):
+        sampling_weights = [0.0 for _ in range(NUM_TOPICS)]
+        for k in range(NUM_TOPICS):
+            theta_dk = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
+            if corpus is None:
+                phi = current_phi.get(('global', k, token), 0.0)  # TODO: what if i cant find this key in current phi?
+            else:
+                phi = current_phi.get((corpus, k, token), 0.0)  # TODO: what if i cant find this key in current phi?
+            sampling_weights[k] = theta_dk * phi
+
+        sum_weight = float(sum(sampling_weights))
+        if sum_weight == 0:
+            #print 'Sum of weights for token:', token, ' is 0.0, this must be an unseen word'
+            sampling_weights = [1.0 for _ in range(NUM_TOPICS)] # give equal weight to all topics
+            sum_weight = len(sampling_weights)
+        elif sum_weight < 0:
+            raise BaseException('Sum of weights is negative, this is a problem!')
+        else:
+            pass
+        probability_per_k = [w / sum_weight for w in sampling_weights]
+        #new_zdi = list(np.random.multinomial(1, probability_per_k, 1)[0]).index(1)
+        new_zdi = multinomial_sampling(range(NUM_TOPICS), probability_per_k)
+        return new_zdi
+
+
+    def get_new_xdi_as_test_document(self, zdi, token, corpus, current_phi):
+        phi_zdi_w = current_phi.get(('global', zdi, token), 0.0)
+        phi_c_zdi_w = current_phi.get((corpus, zdi, token), 0.0)
+
+        sample_weights = [(1 - lamb) * phi_zdi_w, lamb * phi_c_zdi_w]
+        sum_weight = float(sum(sample_weights))
+        if sum_weight == 0:
+            #print 'Sum of weights for token:', token, ' is 0.0, this must be an unseen word'
+            sample_weights = [(1 - lamb), lamb]  # give binomial weight to all possible xdi
+            sum_weight = float(sum(sample_weights))
+        elif sum_weight < 0:
+            raise BaseException('Sum of weights is negative, this is a problem!')
+        else:
+            pass
+        probability_per_binary = [w / sum_weight for w in sample_weights]
+        #new_xdi = list(np.random.multinomial(1, probability_per_binary, 1)[0]).index(1)
+        new_xdi = multinomial_sampling([0, 1], probability_per_binary)
+        return new_xdi
