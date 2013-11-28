@@ -1,7 +1,7 @@
 __author__ = 'arenduchintala'
 
 import random
-from sys import stderr
+from sys import stderr, argv
 from globals import *
 from Document import Document
 from math import log
@@ -11,6 +11,8 @@ import pdb
 
 training_documents = []
 testing_documents = []
+
+burn_in_phi = {}
 
 
 def initialize_nk():
@@ -22,13 +24,13 @@ def initialize_nk():
             nk[('global', zdi, '*')] = nk.get(('global', zdi, '*'), 0.0) + 1.0
             nk[(current_corpus, zdi, token)] = nk.get((current_corpus, zdi, token), 0.0) + 1.0
             nk[(current_corpus, zdi, '*')] = nk.get((current_corpus, zdi, '*'), 0.0) + 1.0
-            VOCAB[token] = VOCAB.get(token, 0.0) + 1.0
+            ALL_VOCAB[token] = ALL_VOCAB.get(token, 0.0) + 1.0
 
     for d in testing_documents:
         for token in d.tokens:
-            if token not in VOCAB:
+            if token not in ALL_VOCAB:
                 UNSEEN_VOCAB[token] = UNSEEN_VOCAB.get(token, 0.0) + 1.0
-            VOCAB[token] = VOCAB.get(token, 0.0) + 1.0
+            ALL_VOCAB[token] = ALL_VOCAB.get(token, 0.0) + 1.0
 
 
 def check():
@@ -89,26 +91,35 @@ def exclude_topic_token_counts(zdi, token, corpus):
         nk[(corpus, zdi, '*')] -= 1.0
 
 
-def compute_phi():
+def compute_phi(burn_in_passed=False):
     current_phi = {}  # includes both global phi and corpus specific phi
     """
     for (corp, k, token) in nk:
         if token != '*': # what if i don't have this check?
             current_phi[(corp, k, token)] = (nk[(corp, k, token)] + beta) / (nk[(corp, k, '*')] + len(VOCAB) * beta)
     """
+    """
     for unseen_token in UNSEEN_VOCAB:
         for k in range(NUM_TOPICS):
             for corp in ['global', 'NIPS', 'ACL']:
                 nckw = nk.get((corp, k, unseen_token), 0.0)
-                if nckw != 0:
-                    raise BaseException(str('corp:' + corp + ' topic:' + str(k) + ' token:' + unseen_token + ' is unseen but has counts'))
-                current_phi[(corp, k, unseen_token)] = (nckw + beta) / (nk[(corp, k, '*')] + len(VOCAB) * beta)
 
-    for token in VOCAB:
+                current_phi[(corp, k, unseen_token)] = (nckw + BETA) / (nk[(corp, k, '*')] + len(ALL_VOCAB) * BETA)
+
+                if burn_in_passed:
+                    burn_in_phi[(corp, k, unseen_token)] = burn_in_phi.get((corp, k, unseen_token), 0.0) + current_phi[
+                        (corp, k, unseen_token)]
+    """
+    for token in ALL_VOCAB:
         for k in range(NUM_TOPICS):
             for corp in ['global', 'NIPS', 'ACL']:
                 nckw = nk.get((corp, k, token), 0.0)
-                current_phi[(corp, k, token)] = (nckw + beta) / (nk[(corp, k, '*')] + len(VOCAB) * beta)
+                if nckw != 0 and token in UNSEEN_VOCAB:
+                    raise BaseException(str('corp:' + corp + ' topic:' + str(k) + ' token:' + token + ' is unseen but has counts'))
+                current_phi[(corp, k, token)] = (nckw + BETA) / (nk[(corp, k, '*')] + len(ALL_VOCAB) * BETA)
+
+                if burn_in_passed:
+                    burn_in_phi[(corp, k, token)] = burn_in_phi.get((corp, k, token), 0.0) + current_phi[(corp, k, token)]
 
     return current_phi
 
@@ -121,13 +132,13 @@ def log_likelihood(document_set, current_phi):
             for z in range(NUM_TOPICS):
                 phi_zw = current_phi[('global', z, w)]
                 phi_cd_zw = current_phi[(d.corpus, z, w)]
-                inner += d.theta[z] * ((1 - lamb) * phi_zw + lamb * phi_cd_zw)
+                inner += d.theta[z] * ((1 - LAMBDA) * phi_zw + LAMBDA * phi_cd_zw)
             if inner > 0.0:
                 sum_log_likelihood += log(inner)
     return sum_log_likelihood
 
 
-def iterate_test_set(current_phi):
+def iterate_test_set(t, current_phi):
     for i, d in enumerate(testing_documents):
         current_corpus = d.corpus
         for idx, token in enumerate(d.tokens):
@@ -144,11 +155,11 @@ def iterate_test_set(current_phi):
             d.x[idx] = new_xdi
 
             d.include_document_topic_counts(new_zdi)
-        d.compute_theta()
+        d.compute_theta(t > BURN_IN - 1)
         d.check_document_topic_counts()
 
 
-def iterate_train_set():
+def iterate_train_set(t):
     for i, d in enumerate(training_documents):
         current_corpus = d.corpus
         for idx, token in enumerate(d.tokens):
@@ -174,16 +185,53 @@ def iterate_train_set():
             d.include_document_topic_counts(new_zdi)
             include_topic_token_counts(new_zdi, token, current_corpus)
 
-        d.compute_theta()
+        d.compute_theta(t > BURN_IN - 1)
         d.check_document_topic_counts()
-    current_phi = compute_phi()
+    current_phi = compute_phi(t > BURN_IN - 1)
     return current_phi
+
+
+def write_sample_mean_phi(burn_in_phi):
+    writable_phi = defaultdict(list)
+    for w in ALL_VOCAB:
+        for corp in ['global', 'NIPS', 'ACL']:
+            phi_ks = []
+            for k in range(NUM_TOPICS):
+                phi_ks.append("%.13e" % (burn_in_phi[(corp, k, w)] / float(NUM_ITERATIONS - BURN_IN)))
+            line = w + ' ' + ' '.join(phi_ks)
+            writable_phi[corp].append(line)
+    do_writing(writable_phi['global'], OUT_FILE + '-phi')
+    do_writing(writable_phi['NIPS'], OUT_FILE + '-phi0')
+    do_writing(writable_phi['ACL'], OUT_FILE + '-phi1')
+
+
+def write_sample_mean_thetas():
+    burns = NUM_ITERATIONS - BURN_IN
+    all_d_sample_means = []
+    for d in testing_documents:
+        theta_d_sample_mean = ["%.13e" % (d.theta_burn_in[theta_dk] / float(burns)) for theta_dk in d.theta_burn_in]
+        theta_d_sample_mean_str = ' '.join(theta_d_sample_mean)
+        all_d_sample_means.append(theta_d_sample_mean_str)
+    do_writing(all_d_sample_means, OUT_FILE + '-theta')
+
+
+def do_writing(a_list, file_name):
+    stderr.write(str('writing ' + file_name + '...\n'))
+    writer = open(file_name, 'w')
+    writer.write('\n'.join(a_list))
+    writer.flush()
+    writer.close()
 
 
 if __name__ == '__main__':
 
-    training_data = open('hw3-files/input-train.txt', 'r').readlines()
-    testing_data = open('hw3-files/input-test.txt', 'r').readlines()
+    """
+    parse_params(argv[:])
+    print "Params:"
+    print TRAIN_FILE, TEST_FILE, OUT_FILE, NUM_TOPICS, LAMBDA, ALPHA, BETA, NUM_ITERATIONS, BURN_IN
+    """
+    training_data = open(TRAIN_FILE, 'r').readlines()
+    testing_data = open(TEST_FILE, 'r').readlines()
 
     for doc_id, document in enumerate(training_data):
         tokens = document.strip().split()
@@ -205,15 +253,27 @@ if __name__ == '__main__':
 
     initialize_nk()
     check()
-    for t in range(100):
+    train_ll_list = []
+    test_ll_list = []
+    print len(ALL_VOCAB)
+    for t in range(NUM_ITERATIONS):
         stderr.write('ITERATION ' + str(t) + '\n')
-        current_phi = iterate_train_set()
-        iterate_test_set(current_phi)
+        current_phi = iterate_train_set(t)
+        iterate_test_set(t, current_phi)
         check()
-        print 'train set log-likelihood', log_likelihood(training_documents, current_phi)
-        print 'test  set log-likelihood', log_likelihood(testing_documents, current_phi)
+        tr_ll = "%.13e" % log_likelihood(training_documents, current_phi)
+        te_ll = "%.13e" % log_likelihood(testing_documents, current_phi)
+        train_ll_list.append(tr_ll)
+        test_ll_list.append(te_ll)
+        print 'train set log-likelihood', tr_ll
+        print 'test  set log-likelihood', te_ll
 
+    do_writing(train_ll_list, OUT_FILE + '-trainll')
 
+    do_writing(test_ll_list, OUT_FILE + '-testll')
+
+    write_sample_mean_thetas()
+    write_sample_mean_phi(burn_in_phi)
 
 
 

@@ -12,6 +12,7 @@ class Document():
         self.x = x
         self.nd = {'*': len(tokens)}
         self.theta = {}
+        self.theta_burn_in = {}
         self.initial_document_counts()
 
     def initial_document_counts(self):
@@ -63,16 +64,16 @@ class Document():
         """
         sampling_weights = [0.0 for _ in range(NUM_TOPICS)]
         for k in range(NUM_TOPICS):
-            theta_dk = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
+            theta_dk = (self.nd[k] + ALPHA) / (self.nd['*'] + NUM_TOPICS * ALPHA)
             # compute phi based on value of argument corpus, if corpus is None, use general phi, else use corpus specific phi
             if corpus is None:
                 nkw = nk.get(('global', k, token), 0.0)
                 nk_star = nk[('global', k, '*')]
-                phi_kw = (nkw + beta) / (nk_star + len(VOCAB) * beta)
+                phi_kw = (nkw + BETA) / (nk_star + len(ALL_VOCAB) * BETA)
             else:
                 nckw = nk.get((corpus, k, token), 0.0)
                 nck_star = nk[(corpus, k, '*')]
-                phi_kw = (nckw + beta) / (nck_star + len(VOCAB) * beta)
+                phi_kw = (nckw + BETA) / (nck_star + len(ALL_VOCAB) * BETA)
 
             if corpus is None:
                 #print 'geting new zdi', k, nkw, nk_star
@@ -101,13 +102,13 @@ class Document():
         """
         nkw = nk.get(('global', zdi, token), 0.0)
         nk_star = nk.get(('global', zdi, '*'), 0.0)
-        phi_zdi_w = ( nkw + beta) / ( nk_star + len(VOCAB) * beta)
+        phi_zdi_w = ( nkw + BETA) / ( nk_star + len(ALL_VOCAB) * BETA)
 
         nckw = nk.get((corpus, zdi, token), 0.0)
         nck_star = nk[(corpus, zdi, '*')]
-        phi_c_zdi_w = (nckw + beta) / ( nck_star + len(VOCAB) * beta)
+        phi_c_zdi_w = (nckw + BETA) / ( nck_star + len(ALL_VOCAB) * BETA)
 
-        sample_weights = [(1 - lamb) * phi_zdi_w, lamb * phi_c_zdi_w]
+        sample_weights = [(1 - LAMBDA) * phi_zdi_w, LAMBDA * phi_c_zdi_w]
         sum_weight = float(sum(sample_weights))
         probability_per_binary = [w / sum_weight for w in sample_weights]
         #new_xdi = list(np.random.multinomial(1, probability_per_binary, 1)[0]).index(1)
@@ -115,9 +116,13 @@ class Document():
         return new_xdi
 
 
-    def compute_theta(self):
+    def compute_theta(self, burn_in_passed=False):
         for k in range(NUM_TOPICS):
-            self.theta[k] = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
+            self.theta[k] = (self.nd[k] + ALPHA) / (self.nd['*'] + NUM_TOPICS * ALPHA)
+
+        if burn_in_passed:
+            for key in self.theta:
+                self.theta_burn_in[key] = self.theta_burn_in.get(key, 0.0) + self.theta[key]
 
         if not DIAGNOSTICS:
             return True
@@ -129,7 +134,7 @@ class Document():
     def get_new_zdi_as_test_document(self, token, current_phi, corpus=None):
         sampling_weights = [0.0 for _ in range(NUM_TOPICS)]
         for k in range(NUM_TOPICS):
-            theta_dk = (self.nd[k] + alpha) / (self.nd['*'] + NUM_TOPICS * alpha)
+            theta_dk = (self.nd[k] + ALPHA) / (self.nd['*'] + NUM_TOPICS * ALPHA)
             if corpus is None:
                 phi = current_phi[('global', k, token)]
             else:
@@ -153,7 +158,7 @@ class Document():
         phi_zdi_w = current_phi[('global', zdi, token)]
         phi_c_zdi_w = current_phi[(corpus, zdi, token)]
 
-        sample_weights = [(1 - lamb) * phi_zdi_w, lamb * phi_c_zdi_w]
+        sample_weights = [(1 - LAMBDA) * phi_zdi_w, LAMBDA * phi_c_zdi_w]
         sum_weight = float(sum(sample_weights))
         if sum_weight == 0:
             raise BaseException(str('Sum of weights for token: ' + token + ' is 0.0, this must be an unseen word'))

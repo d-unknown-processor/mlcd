@@ -2,12 +2,20 @@ __author__ = 'arenduchintala'
 
 import random
 
-NUM_TOPICS = 5  # K
-alpha = 0.1
-beta = 0.01
-lamb = 0.5
+#defaults
+NUM_TOPICS = 5
+ALPHA = 0.1
+BETA = 0.01
+LAMBDA = 0.5
+TRAIN_FILE = 'hw3-files/input-train.txt'
+TEST_FILE = 'hw3-files/input-test.txt'
+OUT_FILE = 'output.txt'
+BURN_IN = 100
+NUM_ITERATIONS = 110
+
+#internal
 nk = {}
-VOCAB = {}
+ALL_VOCAB = {}
 UNSEEN_VOCAB = {}
 DIAGNOSTICS = False
 
@@ -20,6 +28,28 @@ def multinomial_sampling(options, probabilities):
         return options[0]
     else:
         return options[option_idx[0]]
+
+
+def parse_params(args):
+    global TRAIN_FILE
+    TRAIN_FILE = args[1]
+    global TEST_FILE
+    TEST_FILE = args[2]
+    global OUT_FILE
+    OUT_FILE = args[3]
+    global NUM_TOPICS
+    NUM_TOPICS = int(args[4])
+    print NUM_TOPICS, ' is the num topics'
+    global LAMBDA
+    LAMBDA = float(args[5])
+    global ALPHA
+    ALPHA = float(args[6])
+    global BETA
+    BETA = float(args[7])
+    global NUM_ITERATIONS
+    NUM_ITERATIONS = int(args[8])
+    global BURN_IN
+    BURN_IN = int(args[9])
 
 
 """
