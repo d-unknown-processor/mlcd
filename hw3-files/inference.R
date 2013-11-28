@@ -9,18 +9,12 @@ mean.field.inference <- function()
 
   a.up <- function(a)
   {
-    q.a[a] = 0.5
-    
+    0.5
   }
 
   b.up <- function(b)
   {
-    numerator = exp(q.a[1]*log(prob.b.given.a(b,1)) + q.a[2]*log(prob.b.given.a(b,2)))
-    Z = 0
-    for (i in 1:2 ) {
-      Z = Z + exp(q.a[i]*log(prob.b.given.a(b,i)) + q.a[i]*log(prob.b.given.a(b,i)))
-    }
-    q.b[b] = numerator / Z
+    exp(q.a[1]*log(prob.b.given.a(b,1)) + q.a[2]*log(prob.b.given.a(b,2)))
   }
 
   c.up <- function(c)
@@ -32,27 +26,19 @@ mean.field.inference <- function()
       }
     }
     numerator = exp(numerator)
-    Z = 0
-    for (i in 1:2 ) {
-      unexp_Z = 0
-      for (j in 1:2 ) {
-        for (k in 1:2 ) {
-          unexp_Z = unexp_Z + q.a[i]*log(prob.c.given.ab(k,i,j)) + q.b[j]*log(prob.c.given.ab(k,i,j))
-        }
-      }
-      Z = Z + exp(unexp_Z)
-    }
-    q.c[c] = numerator / Z
+    print("c=")
+    print(c)
+    print(numerator)
+    numerator
   }
 
   d.up <- function(d)
   {
     numerator = exp(q.b[1]*log(prob.d.given.b(d,1)) + q.b[2]*log(prob.d.given.b(d,2)))
-    Z = 0
-    for (i in 1:2 ) {
-      Z = Z + exp(q.b[i]*log(prob.d.given.b(d,i)) + q.b[i]*log(prob.d.given.b(d,i)))
-    }
-    q.d[d] = numerator / Z
+    print("d=")
+    print(d)
+    print(numerator)
+    numerator
   }
 
   e.up <- function(e)
@@ -63,28 +49,20 @@ mean.field.inference <- function()
         numerator = numerator + q.c[i]*log(prob.e.given.cd(e,i,j)) + q.d[j]*log(prob.e.given.cd(e,i,j))
       }
     }
-    numerator = exp(numerator)
-    Z = 0
-    for (i in 1:2 ) {
-      unexp_Z = 0
-      for (j in 1:2 ) {
-        for (k in 1:2 ) {
-          unexp_Z = unexp_Z + q.c[i]*log(prob.e.given.cd(k,i,j)) + q.d[j]*log(prob.e.given.cd(k,i,j))
-        }
-      }
-      Z = Z + exp(unexp_Z)
-    }
-    q.e[e] = numerator / Z
+    exp(numerator)
+    print("e=")
+    print(e)
+    print(numerator)
+    numerator
   }
 
   f.up <- function(f)
   {
     numerator = exp(q.d[1]*log(prob.f.given.d(f,1)) + q.d[2]*log(prob.f.given.d(f,2)))
-    Z = 0
-    for (i in 1:2 ) {
-      Z = Z + exp(q.d[i]*log(prob.f.given.d(f,i)) + q.d[i]*log(prob.f.given.d(f,i)))
-    }
-    q.f[f] = numerator / Z
+    print("f=")
+    print(f)
+    print(numerator)
+    numerator
   }
 
   niter <- 0
