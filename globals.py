@@ -39,7 +39,6 @@ def parse_params(args):
     OUT_FILE = args[3]
     global NUM_TOPICS
     NUM_TOPICS = int(args[4])
-    print NUM_TOPICS, ' is the num topics'
     global LAMBDA
     LAMBDA = float(args[5])
     global ALPHA
