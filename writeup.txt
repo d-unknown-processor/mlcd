@@ -1,0 +1,65 @@
+Question 4:
+The collapsed gibbs sampler was implemented and a shell script to run the sampler is provided.
+./collapsed-sampler [input train file] [input test file] [output file preffix] [number of topics] [lambda] [alpha] [beta] [iterations] [burn-in]
+
+Using this we generated the following output files, using different values for K (5 and 25), lambda (0.5, 0.8, 0.2)
+and alpha(0.1 and 1.0). 1100 iterations were completed with 1000 burn in iterations.
+collapsed-output-25-0.2-0.1.txt-phi
+collapsed-output-25-0.2-0.1.txt-phi0
+collapsed-output-25-0.2-0.1.txt-phi1
+collapsed-output-25-0.2-0.1.txt-testll
+collapsed-output-25-0.2-0.1.txt-theta
+collapsed-output-25-0.2-0.1.txt-trainll
+collapsed-output-25-0.5-0.1.txt-phi
+collapsed-output-25-0.5-0.1.txt-phi0
+collapsed-output-25-0.5-0.1.txt-phi1
+collapsed-output-25-0.5-0.1.txt-testll
+collapsed-output-25-0.5-0.1.txt-theta
+collapsed-output-25-0.5-0.1.txt-trainll
+collapsed-output-25-0.5-1.txt-phi
+collapsed-output-25-0.5-1.txt-phi0
+collapsed-output-25-0.5-1.txt-phi1
+collapsed-output-25-0.5-1.txt-testll
+collapsed-output-25-0.5-1.txt-theta
+collapsed-output-25-0.5-1.txt-trainll
+collapsed-output-5-0.5-0.1.txt-phi
+collapsed-output-5-0.5-0.1.txt-phi0
+collapsed-output-5-0.5-0.1.txt-phi1
+collapsed-output-5-0.5-0.1.txt-testll
+collapsed-output-5-0.5-0.1.txt-theta
+collapsed-output-5-0.5-0.1.txt-trainll
+collapsed-output-5-0.8-0.1.txt-phi
+collapsed-output-5-0.8-0.1.txt-phi0
+collapsed-output-5-0.8-0.1.txt-phi1
+collapsed-output-5-0.8-0.1.txt-testll
+collapsed-output-5-0.8-0.1.txt-theta
+collapsed-output-5-0.8-0.1.txt-trainll
+
+Question 6:
+part1:
+
+TODO: add plots, describe what is observed and how train and test likelihoods compare.
+
+part2:
+
+Extra Credit
+
+part3:
+
+Extra Credit
+
+part4:
+The test likelihood increases with number of topics. The likelihood was highest for a topic size of 50.
+
+TODO: show plot of num topics Vs final iteration test log-likelihood
+
+part5:
+
+TODO: show plot of lambda Vs final iteration test log-likelihood
+
+Part 6:
+
+subpart a:
+NIPS, ACL and the global seem to share topic indecies on the theme of 'modelling' and 'algorithms'
+Below is an example:
+
