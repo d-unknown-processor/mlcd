@@ -10,18 +10,23 @@ mean.field.inference <- function()
   a.up <- function(a)
   {
     numerator = 0
-    # Sum over the values of b
+    # Sum over the values of B
     for (i in 1:2 ) {
       numerator = numerator + q.b[i]*log(prob.b.given.a(i,a)*prob.a(a))
     }
-    # Sum over the values of c, marginalize out b
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.c[i]*log(prob.c.given.ab(i,a,j))
+    
+    f_ac <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (a in 1:2) {
+        for (b in 1:2) {
+          f_ac[a,c] = f_ac[a,c] +  prob.c.given.ab(c,a,b)
+        }
       }
     }
+    for (c in 1:2 ) {
+      numerator = numerator + q.c[c]*log(f_ac[a,c])
+    }
     exp(numerator)
-    1.0
   }
 
   b.up <- function(b)
@@ -31,83 +36,149 @@ mean.field.inference <- function()
     for (i in 1:2 ) {
       numerator = numerator + q.a[i]*log(prob.b.given.a(b,i)*prob.a(a))
     }
-    "
-    # Sum over the values of c, marginalize out a
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.c[i]*log(prob.c.given.ab(i,j,b))
+ 
+   
+    f_bc <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (a in 1:2) {
+        for (b in 1:2) {
+          f_bc[b,c] = f_bc[b,c] +  prob.c.given.ab(c,a,b)
+        }
       }
+    }
+    # Sum over the values of c, marginalize out a
+    for (c in 1:2 ) {
+      numerator = numerator + q.c[c]*log(f_bc[b,c])
     }
     # Sum over values of d
     for (i in 1:2 ) {
       numerator = numerator + q.d[i]*log(prob.d.given.b(i,b))
     }
-    "
+    
     exp(numerator)
   }
 
   c.up <- function(c)
   {
     numerator = 0
-    # Sum over values of a, marginalize out b
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.a[i]*log(prob.c.given.ab(c,i,j))
+    f_cb <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (a in 1:2) {
+        for (b in 1:2) {
+          f_cb[c,b] = f_cb[c,b] +  prob.c.given.ab(c,a,b)
+        }
       }
     }
-    # Sum over the values of b, marginalize out a
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.b[j]*log(prob.c.given.ab(c,i,j))
+    f_ca <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (a in 1:2) {
+        for (b in 1:2) {
+          f_ca[c,a] = f_ca[c,a] +  prob.c.given.ab(c,a,b)
+        }
       }
     }
-    "
-    # Sum over the values of e, marginalize out d
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.e[i]*log(prob.e.given.cd(i,c,j))
+    f_ce <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (e in 1:2) {
+        for (d in 1:2) {
+          f_ce[c,e] = f_ce[c,e] +  prob.e.given.cd(e,c,d)
+        }
       }
     }
-    "
+    f_cd <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (e in 1:2) {
+        for (d in 1:2) {
+          f_cd[c,d] = f_cd[c,d] +  prob.e.given.cd(e,c,d)
+        }
+      }
+    }
+    # Sum over values of a
+    for (a in 1:2 ) {
+      numerator = numerator + q.a[a]*log(f_ca[c,a])
+    }
+    # Sum over the values of b
+    for (b in 1:2 ) {
+      numerator = numerator + q.b[b]*log(f_cb[c,b])
+    }
+    
+    # Sum over the values of e
+    for (e in 1:2 ) {
+      numerator = numerator + q.e[e]*log(f_ce[c,e])
+    }
+
+    # Sum over the values of d
+    for (d in 1:2 ) {
+      numerator = numerator + q.d[d]*log(f_cd[c,d])
+    }
+    
     exp(numerator)
   }
 
   d.up <- function(d)
   {
+    f_de <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (e in 1:2) {
+        for (d in 1:2) {
+          f_de[d,e] = f_de[d,e] +  prob.e.given.cd(e,c,d)
+        }
+      }
+    }
+    f_dc <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (e in 1:2) {
+        for (d in 1:2) {
+          f_dc[d,c] = f_dc[d,c] +  prob.e.given.cd(e,c,d)
+        }
+      }
+    }
     numerator = 0
     # Sum over values of b
     for (i in 1:2 ) {
       numerator = numerator + q.b[i]*log(prob.d.given.b(d,i))
     }
-    "
     # Sum over the values of f
     for (i in 1:2 ) {
       numerator = numerator + q.f[i]*log(prob.f.given.d(i,d))
     }
-    # Sum over the values of e, marginalize out c
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.e[i]*log(prob.e.given.cd(i,j,d))
-      }
+    # Sum over the values of e
+    for (e in 1:2 ) {
+      numerator = numerator + q.e[e]*log(f_de[d,e])
     }
-    "
+    # Sum over the values of c
+    for (c in 1:2 ) {
+      numerator = numerator + q.c[c]*log(f_dc[d,c])
+    }
     exp(numerator)
   }
 
   e.up <- function(e)
   {
     numerator = 0
-    # Sum over values of d, marginalize out c
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.d[j]*log(prob.e.given.cd(e,i,j))
+    f_ed <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (e in 1:2) {
+        for (d in 1:2) {
+          f_ed[e,d] = f_ed[e,d] +  prob.e.given.cd(e,c,d)
+        }
       }
     }
-    # Sum over values of c, marginalize out d
-    for (i in 1:2 ) {
-      for (j in 1:2 ) {
-        numerator = numerator + q.c[i]*log(prob.e.given.cd(e,i,j))
+    f_ec <- array(0, dim=c(2,2))
+    for (c in 1:2) {
+      for (e in 1:2) {
+        for (d in 1:2) {
+          f_ec[e,c] = f_ec[e,c] + prob.e.given.cd(e,c,d)
+        }
       }
+    }
+    # Sum over values of d, marginalize out c
+    for (d in 1:2 ) {
+      numerator = numerator + q.d[d]*log(f_ed[e,d])
+    }
+    # Sum over values of c, marginalize out d
+    for (c in 1:2 ) {
+      numerator = numerator + q.c[c]*log(f_ec[e,c])
     }
     exp(numerator)
   }
