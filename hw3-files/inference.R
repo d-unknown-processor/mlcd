@@ -9,60 +9,117 @@ mean.field.inference <- function()
 
   a.up <- function(a)
   {
-    0.5
+    numerator = 0
+    # Sum over the values of b
+    for (i in 1:2 ) {
+      numerator = numerator + q.b[i]*log(prob.b.given.a(i,a)*prob.a(a))
+    }
+    # Sum over the values of c, marginalize out b
+    for (i in 1:2 ) {
+      for (j in 1:2 ) {
+        numerator = numerator + q.c[i]*log(prob.c.given.ab(i,a,j))
+      }
+    }
+    exp(numerator)
+    1.0
   }
 
   b.up <- function(b)
   {
-    exp(q.a[1]*log(prob.b.given.a(b,1)) + q.a[2]*log(prob.b.given.a(b,2)))
+    numerator = 0
+    # Sum over values of a
+    for (i in 1:2 ) {
+      numerator = numerator + q.a[i]*log(prob.b.given.a(b,i)*prob.a(a))
+    }
+    "
+    # Sum over the values of c, marginalize out a
+    for (i in 1:2 ) {
+      for (j in 1:2 ) {
+        numerator = numerator + q.c[i]*log(prob.c.given.ab(i,j,b))
+      }
+    }
+    # Sum over values of d
+    for (i in 1:2 ) {
+      numerator = numerator + q.d[i]*log(prob.d.given.b(i,b))
+    }
+    "
+    exp(numerator)
   }
 
   c.up <- function(c)
   {
     numerator = 0
+    # Sum over values of a, marginalize out b
     for (i in 1:2 ) {
       for (j in 1:2 ) {
-        numerator = numerator + q.a[i]*log(prob.c.given.ab(c,i,j)) + q.b[j]*log(prob.c.given.ab(c,i,j))
+        numerator = numerator + q.a[i]*log(prob.c.given.ab(c,i,j))
       }
     }
-    numerator = exp(numerator)
-    print("c=")
-    print(c)
-    print(numerator)
-    numerator
+    # Sum over the values of b, marginalize out a
+    for (i in 1:2 ) {
+      for (j in 1:2 ) {
+        numerator = numerator + q.b[j]*log(prob.c.given.ab(c,i,j))
+      }
+    }
+    "
+    # Sum over the values of e, marginalize out d
+    for (i in 1:2 ) {
+      for (j in 1:2 ) {
+        numerator = numerator + q.e[i]*log(prob.e.given.cd(i,c,j))
+      }
+    }
+    "
+    exp(numerator)
   }
 
   d.up <- function(d)
   {
-    numerator = exp(q.b[1]*log(prob.d.given.b(d,1)) + q.b[2]*log(prob.d.given.b(d,2)))
-    print("d=")
-    print(d)
-    print(numerator)
-    numerator
+    numerator = 0
+    # Sum over values of b
+    for (i in 1:2 ) {
+      numerator = numerator + q.b[i]*log(prob.d.given.b(d,i))
+    }
+    "
+    # Sum over the values of f
+    for (i in 1:2 ) {
+      numerator = numerator + q.f[i]*log(prob.f.given.d(i,d))
+    }
+    # Sum over the values of e, marginalize out c
+    for (i in 1:2 ) {
+      for (j in 1:2 ) {
+        numerator = numerator + q.e[i]*log(prob.e.given.cd(i,j,d))
+      }
+    }
+    "
+    exp(numerator)
   }
 
   e.up <- function(e)
   {
     numerator = 0
+    # Sum over values of d, marginalize out c
     for (i in 1:2 ) {
       for (j in 1:2 ) {
-        numerator = numerator + q.c[i]*log(prob.e.given.cd(e,i,j)) + q.d[j]*log(prob.e.given.cd(e,i,j))
+        numerator = numerator + q.d[j]*log(prob.e.given.cd(e,i,j))
+      }
+    }
+    # Sum over values of c, marginalize out d
+    for (i in 1:2 ) {
+      for (j in 1:2 ) {
+        numerator = numerator + q.c[i]*log(prob.e.given.cd(e,i,j))
       }
     }
     exp(numerator)
-    print("e=")
-    print(e)
-    print(numerator)
-    numerator
   }
 
   f.up <- function(f)
   {
-    numerator = exp(q.d[1]*log(prob.f.given.d(f,1)) + q.d[2]*log(prob.f.given.d(f,2)))
-    print("f=")
-    print(f)
-    print(numerator)
-    numerator
+    numerator = 0
+    # Sum over the values of d
+    for (i in 1:2 ) {
+      numerator = numerator + q.d[i]*log(prob.f.given.d(f,i))
+    }
+    exp(numerator)
   }
 
   niter <- 0
