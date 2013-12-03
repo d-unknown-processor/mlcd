@@ -124,7 +124,6 @@ mean.field.inference <- function()
                      close.enough(q.d, q.d.old),
                      close.enough(q.e, q.e.old),
                      close.enough(q.f, q.f.old))
-    print(converged)
   }
 
   q.full <- function(a, b, c, d, e, f)
@@ -147,12 +146,28 @@ struct.mean.field.inference <- function()
 
   abc.up <- function(a, b, c)
   {
-    stop("You need to implement the update for Q(ABC)")
+    numerator = 0
+    for (d in 1:2 ) {
+      for (e in 1:2 ) {
+        log_part = prob.a(a)*prob.b.given.a(b,a)*prob.c.given.ab(c,a,b)*prob.d.given.b(d,b)*prob.e.given.cd(e,c,d)
+        q_part = q.d(d)*q.de(d,e)
+        numerator = numerator + q_part * log(log_part)
+      }
+    }
+    exp(numerator) 
   }
 
   def.up <- function(d, e, f)
   {
-    stop("You need to implement the update for Q(DEF)")
+    numerator = 0
+    for (b in 1:2 ) {
+      for (c in 1:2 ) {
+        log_part = prob.f.given.d(f,d)*prob.e.given.cd(e,c,d)*prob.d.given.b(d,b)
+        q_part = q.b(b)*q.c(c)
+        numerator = numerator + q_part * log(log_part)
+      }
+    }
+    exp(numerator)
   }
 
   niter <- 0
