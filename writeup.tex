@@ -1,4 +1,8 @@
 \documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath,amsthm,amssymb}
+
 \title{MLCD Homework 3}
 \date{December 5th 2013}
 \author{David Snyder, dsnyde29
@@ -11,7 +15,27 @@
 
 \section*{Variation Inference on a Simple Network}
 \subsection*{2.1.a}
-TODO Derive meanfield
+
+\begin{proof}
+   Let us use the posterior is factored according to the mean-field distribution:
+   $q(\textbf{x}) = \prod_{i=1}^{D} q_{i}(\textbf{x}_{i})$ 
+   where $x \in \{A,B,C,D,E,F\}$.
+   We need to find the minimum $q$ such that $\mathcal{K}\mathcal{L} (q \mid \mid p)$
+   From equation 21.9 of Murphy we have that this is equivalent to minimizing the lower
+   bound on the energy functional $J(q) \ge -log p(D)$ or equivalently, maximixing the
+   lower bound: $L(q) = log p(D)$.
+  \begin{align*}
+     L(q_{j}) &= \sum_{x} \prod_{i} q_{i} (\textbf{x}_{i}) (log \hat{p} (\textbf{x}) - \sum_{k} log q_{k} (\textbf{x}_{k})) \\
+     &= \sum_{x_{j}} \sum_{x_{-j}} q_{j} (\textbf{x}_{j}) \prod_{i \ne j} q_{i}(\textbf{x}_{i}) (log \hat{p}(\textbf{x}) - \sum_{k} log q_{k}(\textbf{x}_{k})) \\
+     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j} \sum_{\textbf{x}_{-j}})) \prod_{i \ne j} q_{i}(\textbf{x}_{j})(\sum_{k \ne j} log(q_{k}(\textbf{x}_{k} + q_{j}(\textbf{x}_{j})) \\
+     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j}) log(f_{j}(\textbf{x}_{j}) - \sum_{x_{j}} q_{j}(\textbf{x}_{j} log(q_{j}(\textbf{x}_{j})) + C
+ \end{align*}
+ Where $f_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat(p)(\textbf{x})))$
+ This allows us to write $L(q_{j}) = - \mathcal{K} \mathcal{L} (q_{j} \mid \mid f_{i})$. We can minimize this by setting $q_{j} = f_{j}$,
+ giving us $q_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat(p)(\textbf{x})))$
+\end{proof}
+
+
 \subsection*{2.1.b}
 See inference.R for an implementation of the meanfield update equations.
 
@@ -103,8 +127,26 @@ P(Z,X,c,w \mid \alpha, \beta \lamda) = P(w \mid Z,X, c, \beta) P(Z\mid \alpha) P
 \section*{6 Text Analysis}
 \subsection*{6.1}
 
-Refer to plots q6_p1_1.pdf, q6_p1_2.pdf, and q6_p1_3.pdf. We've plotted the test and training log likelihood as a function of
-the number of iterations of iterations. Each plot exhibits the same trends; the training log likelihood increases over a period
+\begin{figure}[H]
+  \caption{Training and Test log likelihoods (chain 1)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p1_1.pdf}
+\end{figure}
+
+\begin{figure}[H]
+  \caption{Training and Test log likelihoods (chain 2)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p1_2.pdf}
+\end{figure}
+
+\begin{figure}[H]
+  \caption{Training and Test log likelihoods (chain 3)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p1_2.pdf}
+\end{figure}
+
+We've plotted the test and training log likelihood as a function of
+the number of iterations. Each plot exhibits the same trends; the training log likelihood increases over a period
 of about 100 iterations, before leveling off, while the test log likelihood behaves asymptotically after about 50 iterations. The
 log likelihood of the test data is much higher than that of the training log likelihood, because the test data is much smaller.
 
@@ -117,13 +159,21 @@ Extra Credit
 Extra Credit
 
 \subsection*{6.4}
+\begin{figure}[H]
+  \caption{Test log likelihood vs topic size}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p4.pdf}
+\end{figure}
 The test likelihood increases with number of topics. The likelihood was highest for a topic size of 50.
 
-TODO: show plot of num topics Vs final iteration test log-likelihood
+\subsection*{6.5}
+\begin{figure}[H]
+  \caption{Test log likelihood as a function of lambda)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p5.pdf}
+\end{figure}
 
-\subsection*{6.4}
-
-Refer to q6_p5.pdf for a plot of test log likelihood as a function of lambda. We see that as lambda decreases the log likelihood
+We see that as lambda decreases the log likelihood
 increases. For instance, at lambda = 1.0 the log likelihood is about -2.28e+05, while at lambda = 0 the log likelihood is about
 -2.255e+05.
 
