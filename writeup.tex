@@ -69,6 +69,36 @@ collapsed-output-5-0.8-0.1.txt-trainll\\
 
 \section*{5 Blocked Gibbs Sampler}
 \subsection*{5.1 Derivation}
+% EXAMPLE PROOF
+%\begin{proof}
+%  Let $t,u \in \mathbb{R}$ where $t=xy$ and $u=zw$. So,
+%  \begin{align*}
+%    4xyzw &= 2\cdot2tu \\
+%    &\le 2\cdot(t^2+u^2) \\
+%    &= 2\cdot((xy)^2+(zw)^2) &&\text{(substituting variables)} \\
+%    &= 2\cdot(x^2y^2+z^2w^2) \\
+%    &= 2x^2y^2+2z^2w^2 \\
+%    &\le ((x^2)^2+(y^2)^2)+((z^2)^2)+(w^2)^2) \\
+%    &= x^4+y^4+z^4+w^4 &&\qedhere
+%  \end{align*}
+%\end{proof}
+\newcommand{\gammasumwbeta}{\Gamma( \sum_w \beta)}                % gamm sum w beta
+\newcommand{\gammesumwnkwplusbeta}{\Gamma (\sum_w n^k_w + \beta)}
+\newcommand\gammankwplusbeta}{\Gamma(n^k_w + \beta)}
+
+\newcommand{\gammesumwnckwplusbeta}{\Gamma (\sum_w n^{c,k}_w + \beta)}
+\newcommand\gammanckwplusbeta}{\Gamma(n^{c,k}_w + \beta)}
+
+\newcommand{\gammasumkalpha}{\Gamma(\sum_k \alpha)} %gamma sum k alpha
+\newcommand{\gammasumkndkplusalpha}{\Gamma(\sum_k n^d_k + \alpha)}
+\newcommand{\}
+For deriving the Blocked Gibbs sampler, we can start with eq.(13) in the handout for the collapsed gibbs sampler.\\
+\begin{proof}
+\being{align*}
+P(Z,X,c,w \mid \alpha, \beta \lamda) = P(w \mid Z,X, c, \beta) P(Z\mid \alpha) P(x\mid \lambda)\\
+= \prod_k { \frac{\gammasumwbeta}{\gammesumwnkwplusbeta} \prod_w{\frac{\gammankwplusbeta}{\Gamma(\beta)}}} \prod_c \prod_k {\frac{\gammasumbeta}{\gammesumwnckwplusbeta} \prod_w{\frac{\gammanckwplusbeta}{\Gamma(\beta)}}} \prod_d{\frac{a}{b} \prod_k{\frac{a}{b}}} \prod_{d,i}P(x_{di} \mid \lambda)
+\end{align*}
+\end{proof}
 
 \section*{6 Text Analysis}
 \subsection*{6.1}
