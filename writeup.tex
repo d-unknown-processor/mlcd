@@ -106,23 +106,60 @@ collapsed-output-5-0.8-0.1.txt-trainll\\
 %    &= x^4+y^4+z^4+w^4 &&\qedhere
 %  \end{align*}
 %\end{proof}
-\newcommand{\gammasumwbeta}{\Gamma( \sum_w \beta)}                % gamm sum w beta
-\newcommand{\gammesumwnkwplusbeta}{\Gamma (\sum_w n^k_w + \beta)}
-\newcommand\gammankwplusbeta}{\Gamma(n^k_w + \beta)}
+\newcommand{\gammasumwbeta}			{\Gamma( \sum_w \beta)}                % gamm sum w beta
+\newcommand{\gammesumwnkwplusbeta}	{\Gamma (\sum_w n^k_w + \beta)}
+\newcommand{\gammankwplusbeta}		{\Gamma(n^k_w + \beta)}
+\newcommand{\gammesumwnckwplusbeta}	{\Gamma (\sum_w n^{c,k}_w + \beta)}
+\newcommand{\gammanckwplusbeta}		{\Gamma(n^{c,k}_w + \beta)}
+\newcommand{\gammasumkalpha}			{\Gamma(\sum_k \alpha)} %gamma sum k alpha
+\newcommand{\gammasumkndkplusalpha}	{\Gamma(\sum_k n^d_k + \alpha)}
+\newcommand{\gammandkplusalpha}		{\Gamma(n^k_d + \alpha)}
+\newcommand{\gammaalpha}				{\Gamma(\alpha)}
+\newcommand{\zgoo}					{\frac{\Gamma(n^{k}_{wdi} + 1 + \beta)}{\Gamma(1 + \sum_w n^k_w + \beta)}}
+\newcommand{\zgol}					{\frac{\Gamma(n^d_k + 1 + \alpha)}{\Gamma(1 + \sum_k n^d_k + \alpha)}}
+\newcommand{\zglo}					{\frac{\Gamma(n^{k}_{wdi} + \beta)}{\Gamma(\sum_w n^k_w + \beta)}}
+\newcommand{\zgll}						{\frac{\gammandkplusalpha}{\gammasumkndkplusalpha}}
+\newcommand{\zcoo}					{\frac{\Gamma(n^{ck}_{wdi} + 1 + \beta)}{\Gamma(1 + \sum_w n^k_w + \beta)}}
+\newcommand{\zcol}					{\frac{\Gamma(n^d_k + 1 + \alpha)}{\Gamma(1 + \sum_k n^d_k + \alpha)}}
+\newcommand{\zclo}					{\frac{\Gamma(n^{ck}_{wdi} + \beta)}{\Gamma(\sum_w n^k_w + \beta)}}
+\newcommand{\zcll}						{\frac{\gammandkplusalpha}{\gammasumkndkplusalpha}}
+\newcommand{\xdione}					{(\lambda)}
+\newcommand{\xdizero}					{(1-\lambda)}
 
-\newcommand{\gammesumwnckwplusbeta}{\Gamma (\sum_w n^{c,k}_w + \beta)}
-\newcommand\gammanckwplusbeta}{\Gamma(n^{c,k}_w + \beta)}
+\newcommand{\zgoonogamma}			{\frac{(n^{k}_{wdi}  + \beta)}{( \sum_w n^k_w + \beta)}}
+\newcommand{\zgolnogamma}			{\frac{(n^d_k + \alpha)}{( \sum_k n^d_k + \alpha)}}
+\newcommand{\zglonogamma}			{\frac{(n^{k}_{wdi} + \beta)}{(\sum_w n^k_w + \beta)}}
+\newcommand{\zgllnogamma}				{\frac{(n^k_d + \alpha)}{\sum_k n^d_k + \alpha}}
+\newcommand{\zcoonogamma}			{\frac{(n^{ck}_{wdi}  + \beta)}{( \sum_w n^{ck}_w + \beta)}}
+\newcommand{\zcolnogamma}				{\frac{(n^d_k  + \alpha)}{(\sum_k n^d_k + \alpha)}}
+\newcommand{\zclonogamma}				{\frac{(n^{ck}_{wdi} + \beta)}{(\sum_w n^{ck}_w + \beta)}}
+\newcommand{\zcllnogamma}				{\frac{n^d_k + \alpha}{\sum_k n^d_k + \alpha}}
 
-\newcommand{\gammasumkalpha}{\Gamma(\sum_k \alpha)} %gamma sum k alpha
-\newcommand{\gammasumkndkplusalpha}{\Gamma(\sum_k n^d_k + \alpha)}
-\newcommand{\}
-For deriving the Blocked Gibbs sampler, we can start with eq.(13) in the handout for the collapsed gibbs sampler.\\
 \begin{proof}
-\being{align*}
-P(Z,X,c,w \mid \alpha, \beta \lamda) = P(w \mid Z,X, c, \beta) P(Z\mid \alpha) P(x\mid \lambda)\\
-= \prod_k { \frac{\gammasumwbeta}{\gammesumwnkwplusbeta} \prod_w{\frac{\gammankwplusbeta}{\Gamma(\beta)}}} \prod_c \prod_k {\frac{\gammasumbeta}{\gammesumwnckwplusbeta} \prod_w{\frac{\gammanckwplusbeta}{\Gamma(\beta)}}} \prod_d{\frac{a}{b} \prod_k{\frac{a}{b}}} \prod_{d,i}P(x_{di} \mid \lambda)
+For deriving the Blocked Gibbs sampler, we can start with $eq.(13)$ in the handout for the collapsed gibbs sampler.\\
+\begin{align*}
+P(Z,X,c,w \mid \alpha, \beta \lamda) &= P(w \mid Z,X, c, \beta) P(Z\mid \alpha) P(x\mid \lambda)\\
+&= \prod_k { \frac{\gammasumwbeta}{\gammesumwnkwplusbeta} \prod_w{\frac{\gammankwplusbeta}{\Gamma(\beta)}}} \\& \prod_c \prod_k {\frac{\gammasumwbeta}{\gammesumwnckwplusbeta} \prod_w{\frac{\gammanckwplusbeta}{\Gamma(\beta)}}} \\&\prod_d{\frac{\gammasumkalpha}{\gammasumkndkplusalpha} \prod_k{\frac{\gammandkplusalpha}{\gammaalpha}}} \prod_{d,i}P(x_{di} \mid \lambda)
 \end{align*}
+from this term we can condition on all terms except $Z_{di}$ and $X_{di}$.\\
+$Z_{di}$ can take the values 0,1,2...K and $X_{di}$ can take the values 0 or 1.\\
+\begin{align*}
+P(Z_{di} = k, X_{di} =0 \mid Z - Z_{di}, X - X_{di}, c, w, \alpha,\beta,\lambda) &= \xdizero (\frac {\zgoo \zgol}{\zglo \zgll})\\
+P(Z_{di} = k, X_{di} =1 \mid Z - Z_{di}, X - X_{di}, c, w, \alpha,\beta,\lambda) &= \xdione (\frac {\zcoo \zcol}{\zclo \zcll})\\
+\end{align*}
+Using the property of the gamma function we can reduce the above expressions\\
+\begin{align*}
+P(Z_{di} = k, X_{di} =0 \mid Z - Z_{di}, X - X_{di}, c, w, \alpha,\beta,\lambda) &= \xdizero (\frac {\zgoonogamma \zgolnogamma}{\zglonogamma \zgllnogamma})\\
+P(Z_{di} = k, X_{di} =1 \mid Z - Z_{di}, X - X_{di}, c, w, \alpha,\beta,\lambda) &= \xdione (\frac {\zcoonogamma \zcolnogamma}{\zclonogamma \zcllnogamma})\\
+\end{align*}
+ Thus using these 2 equations we can relative weights for each condition $Z_{di} = 0,1,..K$ and $X_{di} = 0,1$, since one of the denominator terms are the same we can remove it.
+\begin{align*}
+P(Z_{di} = k, X_{di} =0 \mid \dots) &\propto \xdizero (\frac {\zgoonogamma \zgolnogamma}{\zglonogamma })\\
+P(Z_{di} = k, X_{di} =1 \mid \dots) &\propto \xdione (\frac {\zcoonogamma \zcolnogamma}{\zclonogamma })\\
+\end{align*}
+Which is the final derivation.
 \end{proof}
+
 
 \section*{6 Text Analysis}
 \subsection*{6.1}
