@@ -38,7 +38,10 @@ collapsed-output-5-0.8-0.1.txt-trainll
 Question 6:
 part1:
 
-TODO: add plots, describe what is observed and how train and test likelihoods compare.
+Refer to plots q6_p1_1.pdf, q6_p1_2.pdf, and q6_p1_3.pdf. We've plotted the test and training log likelihood as a function of
+the number of iterations of iterations. Each plot exhibits the same trends; the training log likelihood increases over a period
+of about 100 iterations, before leveling off, while the test log likelihood behaves asymptotically after about 50 iterations. The
+log likelihood of the test data is much higher than that of the training log likelihood, because the test data is much smaller.
 
 part2:
 
@@ -55,7 +58,9 @@ TODO: show plot of num topics Vs final iteration test log-likelihood
 
 part5:
 
-TODO: show plot of lambda Vs final iteration test log-likelihood
+Refer to q6_p5.pdf for a plot of test log likelihood as a function of lambda. We see that as lambda decreases the log likelihood
+increases. For instance, at lambda = 1.0 the log likelihood is about -2.28e+05, while at lambda = 0 the log likelihood is about
+-2.255e+05.
 
 part 6:
 subpart (a):

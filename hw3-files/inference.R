@@ -10,21 +10,10 @@ mean.field.inference <- function()
   a.up <- function(a)
   {
     numerator = 0
-    # Sum over the values of B
-    for (i in 1:2 ) {
-      numerator = numerator + q.b[i]*log(prob.b.given.a(i,a)*prob.a(a))
-    }
-    
-    f_ac <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (a in 1:2) {
-        for (b in 1:2) {
-          f_ac[a,c] = f_ac[a,c] +  prob.c.given.ab(c,a,b)
-        }
-      }
-    }
     for (c in 1:2 ) {
-      numerator = numerator + q.c[c]*log(f_ac[a,c])
+      for (b in 1:2 ) {
+        numerator = numerator + q.c[c]*q.b[b]*log(prob.a(a) * prob.b.given.a(b,a) * prob.c.given.ab(c,a,b))
+      }
     }
     exp(numerator)
   }
@@ -32,27 +21,13 @@ mean.field.inference <- function()
   b.up <- function(b)
   {
     numerator = 0
-    # Sum over values of a
-    for (i in 1:2 ) {
-      numerator = numerator + q.a[i]*log(prob.b.given.a(b,i)*prob.a(a))
-    }
- 
-   
-    f_bc <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (a in 1:2) {
-        for (b in 1:2) {
-          f_bc[b,c] = f_bc[b,c] +  prob.c.given.ab(c,a,b)
+
+    for (a in 1:2 ) {
+      for (c in 1:2) {
+        for (d in 1:2) {
+          numerator = numerator + q.d[d]*q.a[a]*q.c[c]*log(prob.d.given.b(d,b) * prob.c.given.ab(c,a,b) * prob.d.given.b(d,b))
         }
       }
-    }
-    # Sum over the values of c, marginalize out a
-    for (c in 1:2 ) {
-      numerator = numerator + q.c[c]*log(f_bc[b,c])
-    }
-    # Sum over values of d
-    for (i in 1:2 ) {
-      numerator = numerator + q.d[i]*log(prob.d.given.b(i,b))
     }
     
     exp(numerator)
@@ -61,55 +36,14 @@ mean.field.inference <- function()
   c.up <- function(c)
   {
     numerator = 0
-    f_cb <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (a in 1:2) {
-        for (b in 1:2) {
-          f_cb[c,b] = f_cb[c,b] +  prob.c.given.ab(c,a,b)
-        }
-      }
-    }
-    f_ca <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (a in 1:2) {
-        for (b in 1:2) {
-          f_ca[c,a] = f_ca[c,a] +  prob.c.given.ab(c,a,b)
-        }
-      }
-    }
-    f_ce <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (e in 1:2) {
-        for (d in 1:2) {
-          f_ce[c,e] = f_ce[c,e] +  prob.e.given.cd(e,c,d)
-        }
-      }
-    }
-    f_cd <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (e in 1:2) {
-        for (d in 1:2) {
-          f_cd[c,d] = f_cd[c,d] +  prob.e.given.cd(e,c,d)
-        }
-      }
-    }
-    # Sum over values of a
     for (a in 1:2 ) {
-      numerator = numerator + q.a[a]*log(f_ca[c,a])
-    }
-    # Sum over the values of b
-    for (b in 1:2 ) {
-      numerator = numerator + q.b[b]*log(f_cb[c,b])
-    }
-    
-    # Sum over the values of e
-    for (e in 1:2 ) {
-      numerator = numerator + q.e[e]*log(f_ce[c,e])
-    }
-
-    # Sum over the values of d
-    for (d in 1:2 ) {
-      numerator = numerator + q.d[d]*log(f_cd[c,d])
+      for (b in 1:2 ) {
+        for (e in 1:2 ) {
+          for (d in 1:2) {
+            numerator = numerator + q.d[d]*q.a[a]*q.e[e]*q.b[b]*log(prob.c.given.ab(c,a,b) * prob.e.given.cd(e,c,d))
+          }
+        }
+      }
     }
     
     exp(numerator)
@@ -117,38 +51,16 @@ mean.field.inference <- function()
 
   d.up <- function(d)
   {
-    f_de <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (e in 1:2) {
-        for (d in 1:2) {
-          f_de[d,e] = f_de[d,e] +  prob.e.given.cd(e,c,d)
+    numerator = 0 
+    for (b in 1:2 ) {
+      for (c in 1:2) {
+        for (e in 1:2) {
+          for (f in 1:2) {
+              log_term = prob.d.given.b(d,b)*prob.f.given.d(f,d)*prob.e.given.cd(e,c,d)
+              numerator = numerator + q.c[c]*q.f[f]*q.e[e]*q.b[b]*log(log_term)
+          }
         }
       }
-    }
-    f_dc <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (e in 1:2) {
-        for (d in 1:2) {
-          f_dc[d,c] = f_dc[d,c] +  prob.e.given.cd(e,c,d)
-        }
-      }
-    }
-    numerator = 0
-    # Sum over values of b
-    for (i in 1:2 ) {
-      numerator = numerator + q.b[i]*log(prob.d.given.b(d,i))
-    }
-    # Sum over the values of f
-    for (i in 1:2 ) {
-      numerator = numerator + q.f[i]*log(prob.f.given.d(i,d))
-    }
-    # Sum over the values of e
-    for (e in 1:2 ) {
-      numerator = numerator + q.e[e]*log(f_de[d,e])
-    }
-    # Sum over the values of c
-    for (c in 1:2 ) {
-      numerator = numerator + q.c[c]*log(f_dc[d,c])
     }
     exp(numerator)
   }
@@ -156,29 +68,13 @@ mean.field.inference <- function()
   e.up <- function(e)
   {
     numerator = 0
-    f_ed <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (e in 1:2) {
-        for (d in 1:2) {
-          f_ed[e,d] = f_ed[e,d] +  prob.e.given.cd(e,c,d)
-        }
-      }
-    }
-    f_ec <- array(0, dim=c(2,2))
-    for (c in 1:2) {
-      for (e in 1:2) {
-        for (d in 1:2) {
-          f_ec[e,c] = f_ec[e,c] + prob.e.given.cd(e,c,d)
-        }
-      }
-    }
-    # Sum over values of d, marginalize out c
-    for (d in 1:2 ) {
-      numerator = numerator + q.d[d]*log(f_ed[e,d])
-    }
-    # Sum over values of c, marginalize out d
     for (c in 1:2 ) {
-      numerator = numerator + q.c[c]*log(f_ec[e,c])
+      for (f in 1:2) {
+         for (d in 1:2) {
+           log_term = prob.e.given.cd(e,c,d)
+           numerator = numerator + q.c[c]*q.d[d]*q.f[f]*log(log_term)
+         }
+      }
     }
     exp(numerator)
   }
@@ -186,9 +82,11 @@ mean.field.inference <- function()
   f.up <- function(f)
   {
     numerator = 0
-    # Sum over the values of d
-    for (i in 1:2 ) {
-      numerator = numerator + q.d[i]*log(prob.f.given.d(f,i))
+    for (d in 1:2 ) {
+      for (e in 1:2 ) {
+        log_term = prob.f.given.d(f,d)
+        numerator = numerator + q.d[d]*q.e[e]*log(log_term)
+      }
     }
     exp(numerator)
   }
@@ -226,7 +124,6 @@ mean.field.inference <- function()
                      close.enough(q.d, q.d.old),
                      close.enough(q.e, q.e.old),
                      close.enough(q.f, q.f.old))
-    print(converged)
   }
 
   q.full <- function(a, b, c, d, e, f)
@@ -249,12 +146,28 @@ struct.mean.field.inference <- function()
 
   abc.up <- function(a, b, c)
   {
-    stop("You need to implement the update for Q(ABC)")
+    numerator = 0
+    for (d in 1:2 ) {
+      for (e in 1:2 ) {
+        log_part = prob.a(a)*prob.b.given.a(b,a)*prob.c.given.ab(c,a,b)*prob.d.given.b(d,b)*prob.e.given.cd(e,c,d)
+        q_part = q.d(d)*q.de(d,e)
+        numerator = numerator + q_part * log(log_part)
+      }
+    }
+    exp(numerator) 
   }
 
   def.up <- function(d, e, f)
   {
-    stop("You need to implement the update for Q(DEF)")
+    numerator = 0
+    for (b in 1:2 ) {
+      for (c in 1:2 ) {
+        log_part = prob.f.given.d(f,d)*prob.e.given.cd(e,c,d)*prob.d.given.b(d,b)
+        q_part = q.b(b)*q.c(c)
+        numerator = numerator + q_part * log(log_part)
+      }
+    }
+    exp(numerator)
   }
 
   niter <- 0
