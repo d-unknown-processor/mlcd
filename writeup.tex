@@ -1,0 +1,83 @@
+\documentclass{article}
+\title{MLCD Homework 3}
+\date{December 5th 2013}
+\author{David Snyder, dsnyde29
+        \and Adi, adi ID}
+
+\usepackage{amsmath,amsthm,amssymb}
+
+\begin{document}
+\maketitle
+
+\section*{Variation Inference on a Simple Network}
+\subsection*{2.1.a}
+TODO Derive meanfield
+\subsection*{2.1.b}
+See inference.R for an implementation of the meanfield update equations.
+
+TODO: Does the approximation look reasonable? What does the KL divergence mean?
+
+\subsection*{2.1.c}
+TODO Derive struct meanfield
+\subsection*{2.1.d}
+See inference.R for an implementation of the structured meanfield
+update equations. 
+
+TODO:
+Does this look like a better approx than mean-field?
+What does the KL divergence mean in this case?
+Give a brief explanation why structured mean field performs 
+better for this bayesian network
+
+\section*{Collapsed Gibbs Sampler}
+The collapsed gibbs sampler was implemented and a shell script to run the sampler is provided.
+./collapsed-sampler "input train file" "input test file" "output file preffix" "number of topics" "lambda" "alpha" "beta" "iterations" "burn-in"
+
+Using this we generated the following output files, using different values for K (5 and 25), lambda (0.5, 0.8, 0.2)
+and alpha(0.1 and 1.0). 1100 iterations were completed with 1000 burn in iterations.
+collapsed-output-25-0.2-0.1.txt-phi
+collapsed-output-25-0.2-0.1.txt-phi0
+collapsed-output-25-0.2-0.1.txt-phi1
+collapsed-output-25-0.2-0.1.txt-testll
+collapsed-output-25-0.2-0.1.txt-theta
+collapsed-output-25-0.2-0.1.txt-trainll
+collapsed-output-25-0.5-0.1.txt-phi
+collapsed-output-25-0.5-0.1.txt-phi0
+collapsed-output-25-0.5-0.1.txt-phi1
+collapsed-output-25-0.5-0.1.txt-testll
+collapsed-output-25-0.5-0.1.txt-theta
+collapsed-output-25-0.5-0.1.txt-trainll
+collapsed-output-25-0.5-1.txt-phi
+collapsed-output-25-0.5-1.txt-phi0
+collapsed-output-25-0.5-1.txt-phi1
+collapsed-output-25-0.5-1.txt-testll
+collapsed-output-25-0.5-1.txt-theta
+collapsed-output-25-0.5-1.txt-trainll
+collapsed-output-5-0.5-0.1.txt-phi
+collapsed-output-5-0.5-0.1.txt-phi0
+collapsed-output-5-0.5-0.1.txt-phi1
+collapsed-output-5-0.5-0.1.txt-testll
+collapsed-output-5-0.5-0.1.txt-theta
+collapsed-output-5-0.5-0.1.txt-trainll
+collapsed-output-5-0.8-0.1.txt-phi
+collapsed-output-5-0.8-0.1.txt-phi0
+collapsed-output-5-0.8-0.1.txt-phi1
+collapsed-output-5-0.8-0.1.txt-testll
+collapsed-output-5-0.8-0.1.txt-theta
+collapsed-output-5-0.8-0.1.txt-trainll
+
+% EXAMPLE PROOF
+%\begin{proof}
+%  Let $t,u \in \mathbb{R}$ where $t=xy$ and $u=zw$. So,
+%  \begin{align*}
+%    4xyzw &= 2\cdot2tu \\
+%    &\le 2\cdot(t^2+u^2) \\
+%    &= 2\cdot((xy)^2+(zw)^2) &&\text{(substituting variables)} \\
+%    &= 2\cdot(x^2y^2+z^2w^2) \\
+%    &= 2x^2y^2+2z^2w^2 \\
+%    &\le ((x^2)^2+(y^2)^2)+((z^2)^2)+(w^2)^2) \\
+%    &= x^4+y^4+z^4+w^4 &&\qedhere
+%  \end{align*}
+%\end{proof}
+
+\end{document}
