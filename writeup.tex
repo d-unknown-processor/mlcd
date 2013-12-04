@@ -1,6 +1,8 @@
 \documentclass{article}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{amsmath,amsthm,amssymb}
+
 \title{MLCD Homework 3}
 \date{December 5th 2013}
 \author{David Snyder, dsnyde29
@@ -13,7 +15,27 @@
 
 \section*{Variation Inference on a Simple Network}
 \subsection*{2.1.a}
-TODO Derive meanfield
+
+\begin{proof}
+   Let us use the posterior is factored according to the mean-field distribution:
+   $q(\textbf{x}) = \prod_{i=1}^{D} q_{i}(\textbf{x}_{i})$ 
+   where $x \in \{A,B,C,D,E,F\}$.
+   We need to find the minimum $q$ such that $\mathcal{K}\mathcal{L} (q \mid \mid p)$
+   From equation 21.9 of Murphy we have that this is equivalent to minimizing the lower
+   bound on the energy functional $J(q) \ge -log p(D)$ or equivalently, maximixing the
+   lower bound: $L(q) = log p(D)$.
+  \begin{align*}
+     L(q_{j}) &= \sum_{x} \prod_{i} q_{i} (\textbf{x}_{i}) (log \hat{p} (\textbf{x}) - \sum_{k} log q_{k} (\textbf{x}_{k})) \\
+     &= \sum_{x_{j}} \sum_{x_{-j}} q_{j} (\textbf{x}_{j}) \prod_{i \ne j} q_{i}(\textbf{x}_{i}) (log \hat{p}(\textbf{x}) - \sum_{k} log q_{k}(\textbf{x}_{k})) \\
+     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j} \sum_{\textbf{x}_{-j}})) \prod_{i \ne j} q_{i}(\textbf{x}_{j})(\sum_{k \ne j} log(q_{k}(\textbf{x}_{k} + q_{j}(\textbf{x}_{j})) \\
+     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j}) log(f_{j}(\textbf{x}_{j}) - \sum_{x_{j}} q_{j}(\textbf{x}_{j} log(q_{j}(\textbf{x}_{j})) + C
+ \end{align*}
+ Where $f_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat(p)(\textbf{x})))$
+ This allows us to write $L(q_{j}) = - \mathcal{K} \mathcal{L} (q_{j} \mid \mid f_{i})$. We can minimize this by setting $q_{j} = f_{j}$,
+ giving us $q_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat(p)(\textbf{x})))$
+\end{proof}
+
+
 \subsection*{2.1.b}
 See inference.R for an implementation of the meanfield update equations.
 
