@@ -21,10 +21,13 @@ def initialize():
         current_corpus = d.corpus
         for idx, token in enumerate(d.tokens):
             zdi = d.z[idx]
-            globals.nk[('global', zdi, token)] = globals.nk.get(('global', zdi, token), 0.0) + 1.0
-            globals.nk[('global', zdi, '*')] = globals.nk.get(('global', zdi, '*'), 0.0) + 1.0
-            globals.nk[(current_corpus, zdi, token)] = globals.nk.get((current_corpus, zdi, token), 0.0) + 1.0
-            globals.nk[(current_corpus, zdi, '*')] = globals.nk.get((current_corpus, zdi, '*'), 0.0) + 1.0
+            xdi = d.x[idx]
+            if xdi == 0:
+                globals.nk[('global', zdi, token)] = globals.nk.get(('global', zdi, token), 0.0) + 1.0
+                globals.nk[('global', zdi, '*')] = globals.nk.get(('global', zdi, '*'), 0.0) + 1.0
+            else:
+                globals.nk[(current_corpus, zdi, token)] = globals.nk.get((current_corpus, zdi, token), 0.0) + 1.0
+                globals.nk[(current_corpus, zdi, '*')] = globals.nk.get((current_corpus, zdi, '*'), 0.0) + 1.0
             globals.ALL_VOCAB[token] = globals.ALL_VOCAB.get(token, 0.0) + 1.0
 
     for d in testing_documents:
@@ -82,14 +85,22 @@ def exclude_topic_token_counts(zdi, token, corpus):
     if ('global', zdi, token) in globals.nk:
         #print 'reducing ', ('global', zdi, token), ' form ', globals.nk[('global', zdi, token)]
         globals.nk[('global', zdi, token)] -= 1.0
-        #print 'reducing ', ('global', zdi, '*'), ' form ', globals.nk[('global', zdi, '*')]
+        if globals.nk[('global', zdi, token)] < 0:
+            globals.nk[('global', zdi, token)] = 0
+            #print 'reducing ', ('global', zdi, '*'), ' form ', globals.nk[('global', zdi, '*')]
         globals.nk[('global', zdi, '*')] -= 1.0
+        if globals.nk[('global', zdi, '*')] < 0:
+            globals.nk[('global', zdi, '*')] = 0
 
     if (corpus, zdi, token) in globals.nk:
         #print 'reducing ', (corpus, zdi, token), ' form ', globals.nk[(corpus, zdi, token)]
         globals.nk[(corpus, zdi, token)] -= 1.0
-        #print 'reducing ', (corpus, zdi, '*'), ' form ', globals.nk[(corpus, zdi, '*')]
+        if globals.nk[(corpus, zdi, token)] < 0:
+            globals.nk[(corpus, zdi, token)] = 0
+            #print 'reducing ', (corpus, zdi, '*'), ' form ', globals.nk[(corpus, zdi, '*')]
         globals.nk[(corpus, zdi, '*')] -= 1.0
+        if globals.nk[(corpus, zdi, '*')] < 0:
+            globals.nk[(corpus, zdi, '*')] = 0
 
 
 def compute_phi(burn_in_passed=False):
