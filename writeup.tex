@@ -6,7 +6,7 @@
 \title{MLCD Homework 3}
 \date{December 5th 2013}
 \author{David Snyder, dsnyde29
-        \and Adi, adi ID}
+        \and Adithya Renduchintala, arenduc1}
 
 \usepackage{amsmath,amsthm,amssymb}
 
@@ -88,7 +88,7 @@ the structured mean-field. The fully factored mean-field would only
 have been a good approximation if there was indeed very little
 dependence between variables.
 
-\section*{Collapsed Gibbs Sampler}
+\section*{4. Collapsed Gibbs Sampler}
 The collapsed gibbs sampler was implemented and a shell script to run the sampler is provided.
 ./collapsed-sampler "input train file" "input test file" "output file preffix" "number of topics" "lambda" "alpha" "beta" "iterations" "burn-in"
 
@@ -106,6 +106,8 @@ collapsed-output-25-0.5-0.1.txt-phi1\\
 collapsed-output-25-0.5-0.1.txt-testll\\
 collapsed-output-25-0.5-0.1.txt-theta\\
 collapsed-output-25-0.5-0.1.txt-trainll\\
+(NOTE: according to page 10 in the handout, the last combination of parameters was $K=25$, $\lambda=0.5$ and $\alpha=1.0$ , which is the values we submitted)\\
+(however in the same line, the file name shows a $\lambda$ of 0.2, we assumed this was a typo and that the actual $\lambda$ should be 0.5)\\
 collapsed-output-25-0.5-1.txt-phi\\
 collapsed-output-25-0.5-1.txt-phi0\\
 collapsed-output-25-0.5-1.txt-phi1\\
