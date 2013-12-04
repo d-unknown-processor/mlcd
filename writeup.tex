@@ -17,41 +17,76 @@
 \subsection*{2.1.a}
 
 \begin{proof}
-   Let us use the posterior is factored according to the mean-field distribution:
+   Assume the posterior is factored according to the mean-field distribution:
    $q(\textbf{x}) = \prod_{i=1}^{D} q_{i}(\textbf{x}_{i})$ 
    where $x \in \{A,B,C,D,E,F\}$.
-   We need to find the minimum $q$ such that $\mathcal{K}\mathcal{L} (q \mid \mid p)$
+   We need to find the $q$ such that $\mathcal{K}\mathcal{L} (q \mid \mid p)$ is minimized.
    From equation 21.9 of Murphy we have that this is equivalent to minimizing the lower
-   bound on the energy functional $J(q) \ge -log p(D)$ or equivalently, maximixing the
-   lower bound: $L(q) = log p(D)$.
+   bound on the energy functional $J(q) \ge -log(p(D))$ or equivalently, maximixing the
+   lower bound: $L(q) = log(p(D))$.
   \begin{align*}
-     L(q_{j}) &= \sum_{x} \prod_{i} q_{i} (\textbf{x}_{i}) (log \hat{p} (\textbf{x}) - \sum_{k} log q_{k} (\textbf{x}_{k})) \\
-     &= \sum_{x_{j}} \sum_{x_{-j}} q_{j} (\textbf{x}_{j}) \prod_{i \ne j} q_{i}(\textbf{x}_{i}) (log \hat{p}(\textbf{x}) - \sum_{k} log q_{k}(\textbf{x}_{k})) \\
-     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j} \sum_{\textbf{x}_{-j}})) \prod_{i \ne j} q_{i}(\textbf{x}_{j})(\sum_{k \ne j} log(q_{k}(\textbf{x}_{k} + q_{j}(\textbf{x}_{j})) \\
-     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j}) log(f_{j}(\textbf{x}_{j}) - \sum_{x_{j}} q_{j}(\textbf{x}_{j} log(q_{j}(\textbf{x}_{j})) + C
+     L(q_{j}) &= \sum_{x} \prod_{i} q_{i} (\textbf{x}_{i}) (log(\hat{p} (\textbf{x})) - \sum_{k} log(q_{k} (\textbf{x}_{k}))) \\
+     &= \sum_{x_{j}} \sum_{x_{-j}} q_{j} (\textbf{x}_{j}) \prod_{i \ne j} q_{i}(\textbf{x}_{i}) (log(\hat{p}(\textbf{x})) - \sum_{k} log(q_{k}(\textbf{x}_{k}))) \\
+     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j} \sum_{\textbf{x}_{-j}})) \prod_{i \ne j} q_{i}(\textbf{x}_{j})(\sum_{k \ne j} log(q_{k}(\textbf{x}_{k}) + q_{j}(\textbf{x}_{j})) \\
+     &= \sum_{x_{j}} q_{j}(\textbf{x}_{j}) log(f_{j}(\textbf{x}_{j}) - \sum_{x_{j}} q_{j}(\textbf{x}_{j} log(q_{j}(\textbf{x}_{j})) + C \\
  \end{align*}
- Where $f_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat(p)(\textbf{x})))$
- This allows us to write $L(q_{j}) = - \mathcal{K} \mathcal{L} (q_{j} \mid \mid f_{i})$. We can minimize this by setting $q_{j} = f_{j}$,
- giving us $q_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat(p)(\textbf{x})))$
+ Where $f_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat{p}(\textbf{x})))$.
+This allows us to write $L(q_{j}) = - \mathcal{K} \mathcal{L} (q_{j} \mid \mid f_{i})$ once we drop terms which are constant with respect to $q_{j}$. We can minimize this by setting $q_{j} = f_{j}$,
+ giving us $q_{j}(\textbf{x}_{j}) \propto exp(\sum_{\textbf{x}_{-j}} \prod_{i \ne j } q_{i}(\textbf{x}_{i}) log( \hat{p}(\textbf{x})))$.
+ We only need to consider nodes in $\textbf{x}_{j}$'s Markov blanket (21.3 Murphy), so we don't need to multiply over all $q(\textbf{x}_{i})$.
 \end{proof}
+We can now write the final form of the update equations:
+\begin{itemize}
+  \item $q_{A}(a) \propto exp(\sum_{b,c} q_{B}(b) q_{C}(c) log( p(a)p(b \mid a)p(c \mid a,b)))$
+  \item $q_{B}(b) \propto exp(\sum_{a,c,d} q_{A}(a) q_{C}(c) q_{D}(d) log(p(d \mid b,d) p(d \mid b) p(c \mid a,b)))$
+  \item $q_{C}(c) \propto exp(\sum_{a,b,d,e} q_{A}(a) q_{B}(b) q_{C}(c) q_{D}(d) q_{E}(e) log(p(c \mid a,b) p(e \mid c,d)$
+  \item $q_{D}(d) \propto exp(\sum_{b,c,e,f} q_{B}(b) q_{C}(c) q_{E}(e) q_{F}(f) log(p(d \mid b,d) p(f \mid f,d) p(e \mid c,d)$
+  \item $q_{E}(e) \propto exp(\sum_{c,d,f} q_{C}(c) q_{D}(d) q_{F}(f) log(p(e \mid c,d)$
+  \item $q_{F}(f) \propto exp(\sum_{d,e} q_{D}(d) q_{E}(e) log(p(f \mid d)$
+\end{itemize}
 
 
 \subsection*{2.1.b}
-See inference.R for an implementation of the meanfield update equations.
+See inference.R for an implementation of the mean-field update equations.
 
-TODO: Does the approximation look reasonable? What does the KL divergence mean?
+Using the mean-field approximation, we get a KL divergence of about .83 for computing the marginal over $E$ and $F$. The measurement corresponds to a sort of distance, telling us how much information we've lost by approximating $p(E,F)$ by $q(E)q(F)$. This estimate is probably not very reasonable, since it assumes that there is little to no dependence between each variable, although the CPTs shows that there is.
 
 \subsection*{2.1.c}
-TODO Derive struct meanfield
+Note: we handle this derivation in a similar way to mean-field. Because of this, the derivation only holds for non-overlapping structures, such as the $\{A,B,C\}$ and $\{D,E,F\}$.
+
+\begin{proof}
+   Assume the posterior is factored according to the mean-field distribution:
+   $q(\textbf{c}) = \prod_{i=1}^{D} q_{i}(\textbf{c}_{i})$ 
+   where cluster $c \in \{\{A,B,C\},\{D,E,F\}\}$.
+   We need to find the $q$ such that $\mathcal{K}\mathcal{L} (q \mid \mid p)$ is minimized.
+   From equation 21.9 of Murphy we have that this is equivalent to minimizing the lower
+   bound on the energy functional $J(q) \ge -log(p(D))$ or equivalently, maximixing the
+   lower bound: $L(q) = log(p(D))$.
+  \begin{align*}
+     L(q_{j}) &= \sum_{c} \prod_{i} q_{i} (\textbf{x}_{i}) (log(\hat{p} (\textbf{c})) - \sum_{k} log(q_{k} (\textbf{c}_{k}))) \\
+     &= \sum_{c_{j}} \sum_{c_{-j}} q_{j} (\textbf{c}_{j}) \prod_{i \ne j} q_{i}(\textbf{c}_{i}) (log(\hat{p}(\textbf{c})) - \sum_{k} log(q_{k}(\textbf{c}_{k}))) \\
+     &= \sum_{c_{j}} q_{j}(\textbf{c}_{j} \sum_{\textbf{c}_{-j}})) \prod_{i \ne j} q_{i}(\textbf{c}_{j})(\sum_{k \ne j} log(q_{k}(\textbf{c}_{k}) + q_{j}(\textbf{c}_{j})) \\
+     &= \sum_{c_{j}} q_{j}(\textbf{c}_{j}) log(f_{j}(\textbf{c}_{j}) - \sum_{c_{j}} q_{j}(\textbf{c}_{j} log(q_{j}(\textbf{c}_{j})) + C \\
+ \end{align*}
+ Where $f_{j}(\textbf{c}_{j}) \propto exp(\sum_{\textbf{c}_{-j}} \prod_{i \ne j } q_{i}(\textbf{c}_{i}) log( \hat{p}(\textbf{c})))$.
+This allows us to write $L(q_{j}) = - \mathcal{K} \mathcal{L} (q_{j} \mid \mid f_{i})$ once we drop terms which are constant with respect to $q_{j}$. We can minimize this by setting $q_{j} = f_{j}$,
+ giving us $q_{j}(\textbf{c}_{j}) \propto exp(\sum_{\textbf{c}_{-j}} \prod_{i \ne j } q_{i}(\textbf{c}_{i}) log( \hat{p}(\textbf{c})))$.
+ We only need to consider nodes in the Markov blanket of nodes in $\textbf{c}_{j}$ (21.3 Murphy), so we don't need to multiply over all $q(\textbf{c}_{i})$.
+\end{proof}
+We can now write the final form of the update equations:
+\begin{itemize}
+  \item $q_{A,B,C}(a,b,c) \propto exp(\sum_{d,e,f} q_{D}(d) q_{E}(e) q_{F}(f) log( p(a)p(b \mid a)p(c \mid a,b) p(d \mid b) p(e \mid c,d)))$
+  \item $q_{D,E,F}(d,e,f) \propto exp(\sum_{b,c} q_{B}(b) q_{C}(c) log( p(f \mid d)p(e \mid c,d) p(d \mid b) ))$
+\end{itemize}
+
 \subsection*{2.1.d}
 See inference.R for an implementation of the structured meanfield
-update equations. 
-
-TODO:
-Does this look like a better approx than mean-field?
-What does the KL divergence mean in this case?
-Give a brief explanation why structured mean field performs 
-better for this bayesian network
+update equations. This is indeed a better approximation than the mean-field. We get a KL divergence of about 0.002 instead of 0.83. This redunction in KL divergence corresponds to a lower amount of uncertainty by encoding $p(E,F)$ with $\sum_{d} q(d,E,F)$. There is a lot of 
+dependence between the variables in the Bayesian network. This
+is evident both in the $CPT$ as well as the lower KL divergence for
+the structured mean-field. The fully factored mean-field would only
+have been a good approximation if there was indeed very little
+dependence between variables.
 
 \section*{Collapsed Gibbs Sampler}
 The collapsed gibbs sampler was implemented and a shell script to run the sampler is provided.
@@ -167,19 +202,19 @@ Which is the final derivation.
 \begin{figure}[H]
   \caption{Training and Test log likelihoods (chain 1)}
   \centering
-    \includegraphics[width=0.5\textwidth]{q6_p1_1.pdf}
+    \includegraphics[width=1.0\textwidth]{q6_p1_1.pdf}
 \end{figure}
 
 \begin{figure}[H]
   \caption{Training and Test log likelihoods (chain 2)}
   \centering
-    \includegraphics[width=0.5\textwidth]{q6_p1_2.pdf}
+    \includegraphics[width=1.0\textwidth]{q6_p1_2.pdf}
 \end{figure}
 
 \begin{figure}[H]
   \caption{Training and Test log likelihoods (chain 3)}
   \centering
-    \includegraphics[width=0.5\textwidth]{q6_p1_2.pdf}
+    \includegraphics[width=1.0\textwidth]{q6_p1_2.pdf}
 \end{figure}
 
 We've plotted the test and training log likelihood as a function of
@@ -199,7 +234,7 @@ Extra Credit
 \begin{figure}[H]
   \caption{Test log likelihood vs topic size}
   \centering
-    \includegraphics[width=0.5\textwidth]{q6_p4.pdf}
+    \includegraphics[width=1.0\textwidth]{q6_p4.pdf}
 \end{figure}
 The test likelihood increases with number of topics. The likelihood was highest for a topic size of 50.
 
@@ -207,7 +242,7 @@ The test likelihood increases with number of topics. The likelihood was highest 
 \begin{figure}[H]
   \caption{Test log likelihood as a function of lambda)}
   \centering
-    \includegraphics[width=0.5\textwidth]{q6_p5.pdf}
+    \includegraphics[width=1.0\textwidth]{q6_p5.pdf}
 \end{figure}
 
 We see that as lambda decreases the log likelihood
