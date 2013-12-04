@@ -1,4 +1,6 @@
 \documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
 \title{MLCD Homework 3}
 \date{December 5th 2013}
 \author{David Snyder, dsnyde29
@@ -73,8 +75,26 @@ collapsed-output-5-0.8-0.1.txt-trainll\\
 \section*{6 Text Analysis}
 \subsection*{6.1}
 
-Refer to plots q6_p1_1.pdf, q6_p1_2.pdf, and q6_p1_3.pdf. We've plotted the test and training log likelihood as a function of
-the number of iterations of iterations. Each plot exhibits the same trends; the training log likelihood increases over a period
+\begin{figure}[H]
+  \caption{Training and Test log likelihoods (chain 1)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p1_1.pdf}
+\end{figure}
+
+\begin{figure}[H]
+  \caption{Training and Test log likelihoods (chain 2)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p1_2.pdf}
+\end{figure}
+
+\begin{figure}[H]
+  \caption{Training and Test log likelihoods (chain 3)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p1_2.pdf}
+\end{figure}
+
+We've plotted the test and training log likelihood as a function of
+the number of iterations. Each plot exhibits the same trends; the training log likelihood increases over a period
 of about 100 iterations, before leveling off, while the test log likelihood behaves asymptotically after about 50 iterations. The
 log likelihood of the test data is much higher than that of the training log likelihood, because the test data is much smaller.
 
@@ -87,13 +107,21 @@ Extra Credit
 Extra Credit
 
 \subsection*{6.4}
+\begin{figure}[H]
+  \caption{Test log likelihood vs topic size}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p4.pdf}
+\end{figure}
 The test likelihood increases with number of topics. The likelihood was highest for a topic size of 50.
 
-TODO: show plot of num topics Vs final iteration test log-likelihood
+\subsection*{6.5}
+\begin{figure}[H]
+  \caption{Test log likelihood as a function of lambda)}
+  \centering
+    \includegraphics[width=0.5\textwidth]{q6_p5.pdf}
+\end{figure}
 
-\subsection*{6.4}
-
-Refer to q6_p5.pdf for a plot of test log likelihood as a function of lambda. We see that as lambda decreases the log likelihood
+We see that as lambda decreases the log likelihood
 increases. For instance, at lambda = 1.0 the log likelihood is about -2.28e+05, while at lambda = 0 the log likelihood is about
 -2.255e+05.
 
